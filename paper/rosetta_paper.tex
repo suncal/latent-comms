@@ -1,0 +1,248 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{\textbf{Rosetta: Cross-Model Interoperability for Learned Communication\\ via Base-Frozen Reference Adapters}}
+\author{Priyankar Chakraborty\\ \small P CHAK Consulting \\ \small \texttt{priyankar@pchakconsulting.com}}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Learned (``semantic'') joint source--channel coding (JSCC) consistently outperforms
+classical separation in simulation, yet remains undeployed. A recurring reason cited
+in the 2025--26 literature and 6G standardization roadmaps is \emph{cross-model
+interoperability}: two transceivers trained independently---by different vendors, or
+as different model versions---learn private latent codes and cannot understand one
+another, so the link collapses to noise even over a clean channel. We present
+\textbf{Rosetta}, an interoperability layer that aligns independently-trained
+transceivers \emph{without retraining them}. Rosetta standardizes a shared reference
+signal space and equips each model with two lightweight adapters that map its private
+symbols to and from the reference; all base encoders and decoders remain frozen, and
+only the adapters are trained, jointly, so that every transmitter reaches every
+receiver through the reference. This reduces the $N$-vendor bridging problem from
+$O(N^2)$ bespoke translators to $O(N)$ adapters against a single standard. On three
+independently-trained deep-JSCC image transceivers, raw cross-model transmission
+achieves only $9.2$~dB PSNR (versus $22.6$~dB matched); adding Rosetta raises every
+one of the nine sender--receiver pairs to $22.2$~dB---within $0.4$~dB of matched---%
+with zero changes to any base model. Rosetta is not a new codec; it is a
+standardizable alignment layer. We report results at proof-of-concept scale and
+discuss the calibration, governance, and generality limitations that remain.
+\end{abstract}
+
+\section{Introduction}
+Classical communication separates source coding (compression) from channel coding
+(error protection). Deep JSCC instead trains a neural encoder and decoder end-to-end
+over a channel model, and has been shown to degrade gracefully---without the digital
+``cliff''---particularly at low SNR and short blocklengths
+\cite{bourtsoulatze2019,kurka2020}. Semantic and task-oriented variants extend this to
+transmitting meaning rather than bits \cite{xie2021,gunduz2023}, and the approach is a
+pillar of native-AI 6G visions \cite{roadmap2025}.
+
+Despite strong simulation results, learned communication is not deployed. Surveys and
+standardization roadmaps repeatedly identify the same barrier: \emph{semantic
+misalignment / knowledge mismatch across independently-built endpoints}, for which
+formal models are ``largely undeveloped'' \cite{tenchallenges,roadmap2025}. A learned
+encoder and decoder must share a code; two systems that never trained together do not,
+and interoperate no better than random.
+
+This paper isolates that barrier and offers a concrete, standardizable remedy. Our
+contributions are:
+\begin{enumerate}
+  \item We formalize cross-model interoperability for learned communication and give a
+        clean empirical characterization of the failure: independently-trained
+        transceivers that each achieve $\sim$22.7~dB with their own receiver achieve
+        only $\sim$9~dB across models, even on a noiseless-to-good channel.
+  \item We propose \textbf{Rosetta}, a base-frozen adapter scheme that aligns
+        $N$ transceivers to a shared reference space with $O(N)$ small adapters,
+        requiring no modification or retraining of the deployed base models.
+  \item We demonstrate that Rosetta restores full any-to-any interoperability among
+        three independently-trained transceivers ($9.2 \rightarrow 22.2$~dB
+        cross-model, all nine pairs), and we analyze the remaining calibration,
+        governance, and scope limitations honestly.
+\end{enumerate}
+
+\section{Related Work}
+\textbf{Deep JSCC.} Bourtsoulatze \emph{et al.}~\cite{bourtsoulatze2019} introduced
+deep-JSCC for wireless image transmission; subsequent work added bandwidth/SNR
+adaptivity and attention \cite{kurka2020}. These establish the per-link performance we
+build on but assume a single jointly-trained encoder--decoder pair.
+
+\textbf{Semantic / task-oriented communication.} DeepSC and successors
+\cite{xie2021,gunduz2023} transmit task-relevant semantics; recent surveys enumerate
+open problems, of which interoperability and knowledge alignment are consistently
+ranked most critical \cite{tenchallenges}. 6G standardization efforts explicitly call
+for unified, interoperable, modular semantic architectures \cite{roadmap2025}.
+
+\textbf{Agent communication.} As autonomous AI agents proliferate, a standardized
+agent communication protocol is argued to be urgently needed \cite{lacp2025}; the
+alignment problem there is structurally identical to the one we address.
+
+\textbf{Position.} Prior work almost universally studies a single trained system.
+Rosetta is orthogonal: it takes \emph{already-trained, frozen} systems and makes them
+interoperate. To our knowledge this ``standardize a reference, adapt at the edges,
+retrain nothing'' formulation and its clean multi-model demonstration are not present
+in the deep-JSCC literature.
+
+\section{Problem Formulation}
+Consider $N$ transceivers indexed by $i$, each a trained encoder $E_i:\mathcal{X}\to
+\mathbb{R}^{k}$ and decoder $D_i:\mathbb{R}^{k}\to\mathcal{X}$, produced by independent
+training runs (different seeds, data orderings, or vendors). For input $x$, sender $i$
+emits power-normalized symbols $z_i=E_i(x)$ transmitted over a channel $\mathcal{H}$
+(here AWGN at a given SNR), and receiver $j$ reconstructs $\hat{x}=D_j(\mathcal{H}(z_i))$.
+
+When $i=j$ the pair is matched and reconstruction is good. When $i\neq j$ the code
+spaces are unaligned and $\hat{x}$ is meaningless. The \emph{interoperability
+objective} is to make $D_j(\cdot)$ usable on transmissions originating from $E_i$ for
+all $i,j$, \emph{subject to the constraint that $E_i,D_i$ cannot be modified} (they are
+deployed, proprietary, or otherwise fixed).
+
+\section{Method}
+Rosetta introduces a shared reference space $\mathbb{R}^{k}$ (a published standard) and,
+for each model $i$, two adapters:
+\[
+  A_i:\mathbb{R}^{k}\!\to\!\mathbb{R}^{k}\ \text{(private}\to\text{reference)},\qquad
+  B_i:\mathbb{R}^{k}\!\to\!\mathbb{R}^{k}\ \text{(reference}\to\text{private)}.
+\]
+Sender $i$ transmits the standardized signal $r_i=\mathrm{PN}\!\big(A_i(E_i(x))\big)$,
+where $\mathrm{PN}$ enforces unit average symbol power; receiver $j$ reconstructs
+$\hat{x}_{ij}=D_j\!\big(B_j(\mathcal{H}(r_i))\big)$. Adapters are residual,
+$A_i(z)=z+f_i(z)$, so identity is the initialization prior. All $E_i,D_i$ are frozen.
+Only $\{A_i,B_i\}_{i=1}^N$ are trained, jointly, by minimizing the mean reconstruction
+distortion over all ordered pairs and a range of channel SNRs:
+\[
+  \mathcal{L}=\mathbb{E}_{x,\,\mathrm{SNR}}\;\frac{1}{N^2}\sum_{i=1}^{N}\sum_{j=1}^{N}
+  \big\| D_j\!\big(B_j(\mathcal{H}(\mathrm{PN}(A_i(E_i(x)))))\big)-x\big\|_2^2 .
+\]
+Because every model is aligned to one reference rather than to every other model, the
+number of learned modules scales as $O(N)$ rather than $O(N^2)$---the structure a
+standards body could publish once and have vendors implement independently.
+
+\section{Experimental Setup}
+\textbf{Base models.} Three deep-JSCC image transceivers (``Latent Radio'') are trained
+independently on Fashion-MNIST ($28\times28$ grayscale) with seeds $\{0,1,2\}$. Each is
+a convolutional encoder/decoder with $k=128$ real channel uses, power-normalized
+symbols, trained end-to-end over an AWGN channel with SNR drawn per batch from
+$[-2,12]$~dB. Each base model has $9.32\times10^5$ parameters.
+
+\textbf{Adapters.} Each $A_i,B_i$ is a 3-layer residual MLP ($128\!\to\!256\!\to\!256\!
+\to\!128$, GELU). The full Rosetta layer for $N=3$ has $7.90\times10^5$ trainable
+parameters (\emph{less than one base model}), trained for 2\,500 steps (batch 128, Adam,
+$8\times10^{-4}$) with SNR $\sim\mathcal{U}[-2,14]$~dB. Base models remain frozen
+throughout.
+
+\textbf{Metrics.} We report reconstruction PSNR (dB) on a held-out test set for every
+sender--receiver pair, at a common evaluation SNR of 10~dB, and averaged cross-model
+PSNR across SNR $\in\{0,4,8,12\}$~dB.
+
+\section{Results}
+Table~\ref{tab:matrix} gives the $3\times3$ PSNR matrix before and after Rosetta.
+Raw cross-model transmission works only on the diagonal (matched pairs, $\sim$22.6~dB);
+all six off-diagonal pairs collapse to $\sim$9~dB. With Rosetta, all nine pairs reach
+$22.2$--$22.4$~dB---within $0.4$~dB of matched---while no base weight is changed.
+Averaged over off-diagonal pairs, cross-model PSNR rises from $9.2$ to $22.2$~dB. The
+gain holds across the channel (Table~\ref{tab:snr}): aligned cross-model PSNR tracks the
+matched-through-reference curve to within a few tenths of a dB from 0 to 12~dB.
+
+\begin{table}[h]
+\centering
+\caption{Sender$\rightarrow$Receiver PSNR (dB) at 10~dB SNR. Rows: transmitter; columns:
+receiver. Left: raw cross-model. Right: through Rosetta. Base models frozen.}
+\label{tab:matrix}
+\small
+\begin{tabular}{c ccc c ccc}
+\toprule
+& \multicolumn{3}{c}{\textbf{Before (raw)}} & & \multicolumn{3}{c}{\textbf{After (Rosetta)}}\\
+\cmidrule(lr){2-4}\cmidrule(lr){6-8}
+TX$\backslash$RX & 0 & 1 & 2 & & 0 & 1 & 2\\
+\midrule
+0 & 22.6 & 9.2 & 9.1 & & 22.4 & 22.2 & 22.2\\
+1 & 9.5 & 22.7 & 9.3 & & 22.2 & 22.4 & 22.2\\
+2 & 9.0 & 9.1 & 22.6 & & 22.2 & 22.2 & 22.4\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Mean cross-model PSNR (dB) vs.\ SNR. ``Raw'': off-diagonal without Rosetta.
+``Rosetta'': off-diagonal with Rosetta. ``Matched'': diagonal through the reference.}
+\label{tab:snr}
+\small
+\begin{tabular}{lcccc}
+\toprule
+SNR (dB) & 0 & 4 & 8 & 12\\
+\midrule
+Raw (no Rosetta)   & 9.1  & 9.2  & 9.2  & 9.2\\
+Rosetta (cross)    & 19.4 & 21.1 & 21.9 & 22.4\\
+Matched (via ref)  & 19.6 & 21.2 & 22.1 & 22.6\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion and Limitations}
+We state the boundaries of this result explicitly.
+\begin{itemize}
+  \item \textbf{Scale.} The demonstration uses small grayscale imagery, one codec
+        family, and $N=3$. It is a proof of concept that the mismatch is
+        \emph{fixable} with a tiny base-frozen layer, not a validated system.
+  \item \textbf{Joint calibration.} The adapters are trained jointly on shared
+        calibration data. In practice this implies a governed reference space and a
+        calibration protocol; \emph{who owns and maintains the reference} is a real,
+        unresolved governance question rather than a technical afterthought.
+  \item \textbf{Scope of alignment.} Rosetta aligns the latent code family of a JSCC
+        transceiver. It does not, by itself, reconcile arbitrary task semantics or
+        heterogeneous model architectures with different channel-use budgets; extending
+        beyond a common $k$ is future work.
+  \item \textbf{Simulation.} Results are from an AWGN software channel; real deployment
+        requires hardware-in-the-loop validation (fading, Doppler, timing recovery,
+        front-end nonlinearity), which no simulation establishes.
+\end{itemize}
+
+\section{Broader Impact}
+If cross-model interoperability can be provided by a small, standardizable, base-frozen
+layer, it removes the most-cited obstacle between learned communication and
+deployment, and offers a concrete shape---one published reference, $O(N)$ vendor
+adapters---for standardization bodies (e.g., Next~G Alliance, 3GPP) to consider. The
+same construction applies to the emerging need for interoperable AI-agent
+communication \cite{lacp2025}. The primary risk is premature reliance on
+simulation-stage results; we therefore foreground the limitations above.
+
+\section{Conclusion}
+Learned communication does not fail because the coding is weak; at the link level it is
+strong. It fails to \emph{ship} because independently-built endpoints cannot understand
+each other. Rosetta shows that this interoperability can be restored---any-to-any,
+$9.2\rightarrow22.2$~dB---by standardizing a reference and adapting at the edges, with
+the base models untouched. The construction is simple, $O(N)$, and standard-shaped. We
+release all code and invite independent evaluation and hardware validation.
+
+\section*{Acknowledgment}
+The prototype and experiments were implemented with AI-assisted software tooling.
+Code: \url{https://github.com/suncal/latent-comms}.
+
+\begin{thebibliography}{9}
+\small
+\bibitem{bourtsoulatze2019} E.~Bourtsoulatze, D.~Burth Kurka, D.~G\"und\"uz,
+``Deep Joint Source-Channel Coding for Wireless Image Transmission,''
+\emph{IEEE Trans. Cognitive Communications and Networking}, 2019.
+\bibitem{kurka2020} D.~Burth Kurka, D.~G\"und\"uz, ``DeepJSCC-f: Deep Joint
+Source-Channel Coding of Images with Feedback,'' \emph{IEEE JSAIT}, 2020.
+\bibitem{xie2021} H.~Xie, Z.~Qin, G.~Y.~Li, B.-H.~Juang, ``Deep Learning Enabled
+Semantic Communication Systems (DeepSC),'' \emph{IEEE Trans. Signal Processing}, 2021.
+\bibitem{gunduz2023} D.~G\"und\"uz \emph{et al.}, ``Beyond Transmitting Bits: Context,
+Semantics, and Task-Oriented Communications,'' \emph{IEEE JSAC}, 2023.
+\bibitem{roadmap2025} ``Towards Native AI in 6G Standardization: The Roadmap of
+Semantic Communication,'' arXiv:2509.12758, 2025.
+\bibitem{tenchallenges} ``Ten Challenges in Semantic Communications,'' 2025.
+\bibitem{lacp2025} ``LLM Agent Communication Protocol (LACP) Requires Urgent
+Standardization,'' arXiv:2510.13821, 2025.
+\end{thebibliography}
+
+\end{document}
