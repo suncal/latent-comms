@@ -1,0 +1,158 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rosetta — making independently-trained AI radios understand each other</title>
+<style>
+ :root{color-scheme:light dark}
+ body{font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:900px;margin:0 auto;padding:34px 20px 60px;background:#0b0f19;color:#e5e7eb}
+ h1{font-size:27px;margin:0 0 4px} h2{font-size:20px;margin:34px 0 10px;border-bottom:1px solid #1f2937;padding-bottom:6px}
+ .tag{display:inline-block;font-size:12px;font-weight:600;color:#818cf8;border:1px solid #3730a3;background:#12142b;border-radius:999px;padding:3px 10px;margin-bottom:12px}
+ .sub{color:#9ca3af;margin:0 0 16px;max-width:80ch}
+ .card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:16px 20px;margin:14px 0}
+ .win{border-color:#3730a3;background:#12142b}
+ .row{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+ .heat{width:300px;height:auto} .chart{width:100%;height:auto;background:#0b0f19;border-radius:8px}
+ .ht{fill:#e5e7eb;font-size:13px;font-weight:700;text-anchor:middle} .hv{fill:#04121c;font-size:16px;font-weight:800;text-anchor:middle}
+ .hl{fill:#9ca3af;font-size:12px} .grid{stroke:#1f2937} text{fill:#9ca3af;font:11px sans-serif}
+ .ylab{text-anchor:end} .xlab{text-anchor:middle} .axtitle{fill:#6b7280;text-anchor:middle;font-size:12px}
+ .legend span{display:inline-block;margin:2px 16px 2px 0;font-size:13px} .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}
+ .big{font-size:30px;font-weight:800} .stat{display:inline-block;margin:6px 26px 6px 0} .stat .lab{display:block;color:#9ca3af;font-size:12px}
+ .key{color:#818cf8;font-weight:600} code{background:#1f2937;padding:1px 6px;border-radius:4px;font-size:13px}
+</style></head><body>
+<div class="tag">THE FIELD'S #1 BLOCKER · CROSS-MODEL INTEROPERABILITY</div>
+<h1>Rosetta — making independently-built AI radios understand each other</h1>
+<p class="sub">Semantic / learned communication works beautifully in the lab and is <b>still undeployed</b>. The reason
+named again and again in the 2025–26 literature and 6G standardization roadmaps: two endpoints trained separately
+(different vendors, different model versions) learn <b>private codes and cannot interoperate</b> — the link collapses
+to noise even on a perfect channel, and formal models of this "knowledge mismatch" are, quote, largely undeveloped.
+Our own earlier experiments hit this exact wall. Rosetta is the way over it.</p>
+
+<div class="card win">
+<div class="stat"><span class="big" style="color:#34d399">9.2 → 22.2 dB</span><span class="lab">cross-vendor link quality (garbage → matched, ref 22.6 dB)</span></div>
+<div class="stat"><span class="big" style="color:#818cf8">0</span><span class="lab">base-model weights changed — encoders/decoders stay frozen</span></div>
+</div>
+
+<h2>Three independently-trained radios — every pair, before &amp; after</h2>
+<p class="sub">Rows = transmitter, columns = receiver. Green ≈ working (~22 dB), red ≈ broken (~9 dB). Left: raw
+cross-model transmission. Right: the same pairs through Rosetta.</p>
+<div class="row">
+<svg viewBox="0 0 362 332" xmlns="http://www.w3.org/2000/svg" class="heat">
+<text x="181" y="18" class="ht">BEFORE — raw (only the diagonal works)</text>
+<rect x="94" y="34" width="74" height="74" rx="8" fill="rgb(52,211,153)"/>
+<text x="131" y="76" class="hv">23</text>
+<rect x="172" y="34" width="74" height="74" rx="8" fill="rgb(236,70,69)"/>
+<text x="209" y="76" class="hv">9</text>
+<rect x="250" y="34" width="74" height="74" rx="8" fill="rgb(237,69,68)"/>
+<text x="287" y="76" class="hv">9</text>
+<text x="86" y="75" class="hl" text-anchor="end">TX 0</text>
+<rect x="94" y="112" width="74" height="74" rx="8" fill="rgb(232,73,71)"/>
+<text x="131" y="154" class="hv">10</text>
+<rect x="172" y="112" width="74" height="74" rx="8" fill="rgb(52,211,153)"/>
+<text x="209" y="154" class="hv">23</text>
+<rect x="250" y="112" width="74" height="74" rx="8" fill="rgb(234,71,69)"/>
+<text x="287" y="154" class="hv">9</text>
+<text x="86" y="153" class="hl" text-anchor="end">TX 1</text>
+<rect x="94" y="190" width="74" height="74" rx="8" fill="rgb(239,68,68)"/>
+<text x="131" y="232" class="hv">9</text>
+<rect x="172" y="190" width="74" height="74" rx="8" fill="rgb(237,69,68)"/>
+<text x="209" y="232" class="hv">9</text>
+<rect x="250" y="190" width="74" height="74" rx="8" fill="rgb(52,211,153)"/>
+<text x="287" y="232" class="hv">23</text>
+<text x="86" y="231" class="hl" text-anchor="end">TX 2</text>
+<text x="131" y="284" class="hl" text-anchor="middle">RX 0</text>
+<text x="209" y="284" class="hl" text-anchor="middle">RX 1</text>
+<text x="287" y="284" class="hl" text-anchor="middle">RX 2</text>
+</svg>
+<svg viewBox="0 0 362 332" xmlns="http://www.w3.org/2000/svg" class="heat">
+<text x="181" y="18" class="ht">AFTER — through Rosetta (all 9 pairs work)</text>
+<rect x="94" y="34" width="74" height="74" rx="8" fill="rgb(53,209,152)"/>
+<text x="131" y="76" class="hv">22</text>
+<rect x="172" y="34" width="74" height="74" rx="8" fill="rgb(56,207,151)"/>
+<text x="209" y="76" class="hv">22</text>
+<rect x="250" y="34" width="74" height="74" rx="8" fill="rgb(56,207,151)"/>
+<text x="287" y="76" class="hv">22</text>
+<text x="86" y="75" class="hl" text-anchor="end">TX 0</text>
+<rect x="94" y="112" width="74" height="74" rx="8" fill="rgb(56,207,151)"/>
+<text x="131" y="154" class="hv">22</text>
+<rect x="172" y="112" width="74" height="74" rx="8" fill="rgb(53,209,152)"/>
+<text x="209" y="154" class="hv">22</text>
+<rect x="250" y="112" width="74" height="74" rx="8" fill="rgb(56,207,151)"/>
+<text x="287" y="154" class="hv">22</text>
+<text x="86" y="153" class="hl" text-anchor="end">TX 1</text>
+<rect x="94" y="190" width="74" height="74" rx="8" fill="rgb(56,207,151)"/>
+<text x="131" y="232" class="hv">22</text>
+<rect x="172" y="190" width="74" height="74" rx="8" fill="rgb(56,207,151)"/>
+<text x="209" y="232" class="hv">22</text>
+<rect x="250" y="190" width="74" height="74" rx="8" fill="rgb(53,209,152)"/>
+<text x="287" y="232" class="hv">22</text>
+<text x="86" y="231" class="hl" text-anchor="end">TX 2</text>
+<text x="131" y="284" class="hl" text-anchor="middle">RX 0</text>
+<text x="209" y="284" class="hl" text-anchor="middle">RX 1</text>
+<text x="287" y="284" class="hl" text-anchor="middle">RX 2</text>
+</svg>
+</div>
+
+<h2>How it works</h2>
+<div class="card">
+Don't retrain the deployed models — you can't. Standardize a shared <span class="key">reference space</span> and give
+each model two tiny adapters: <code>to_ref</code> (its private symbols → the standard signal that's transmitted) and
+<code>from_ref</code> (received standard signal → its private symbols). Every encoder/decoder stays <b>frozen</b>;
+only the adapters learn, jointly, so that <i>every</i> transmitter reaches <i>every</i> receiver through the
+reference. The N-vendor problem collapses from O(N²) bespoke bridges to <b>O(N) adapters against one standard</b> —
+exactly the shape a standards body (Next G Alliance, 3GPP) could publish. Total adapter cost here:
+790,272 params, vs 932,065 per base model.
+</div>
+
+<h2>It holds across the channel</h2>
+<div class="legend card"><span><span class="dot" style="background:#22d3ee"></span>matched (own receiver)</span><span><span class="dot" style="background:#818cf8"></span>cross-vendor WITH Rosetta</span><span><span class="dot" style="background:#ef4444"></span>cross-vendor WITHOUT (raw)</span></div>
+<svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg" class="chart">
+<line x1="54" y1="286" x2="706" y2="286" class="grid"/>
+<text x="46" y="290" class="ylab">8</text>
+<line x1="54" y1="240" x2="706" y2="240" class="grid"/>
+<text x="46" y="244" class="ylab">11</text>
+<line x1="54" y1="193" x2="706" y2="193" class="grid"/>
+<text x="46" y="197" class="ylab">14</text>
+<line x1="54" y1="147" x2="706" y2="147" class="grid"/>
+<text x="46" y="151" class="ylab">17</text>
+<line x1="54" y1="100" x2="706" y2="100" class="grid"/>
+<text x="46" y="104" class="ylab">20</text>
+<line x1="54" y1="54" x2="706" y2="54" class="grid"/>
+<text x="46" y="58" class="ylab">24</text>
+<text x="54" y="306" class="xlab">0</text>
+<text x="271" y="306" class="xlab">4</text>
+<text x="489" y="306" class="xlab">8</text>
+<text x="706" y="306" class="xlab">12</text>
+<polyline points="54.0,114.0 271.3,89.1 488.7,75.4 706.0,69.0" fill="none" stroke="#22d3ee" stroke-width="3" stroke-dasharray="2 3"/>
+<circle cx="54.0" cy="114.0" r="3.5" fill="#22d3ee"/>
+<circle cx="271.3" cy="89.1" r="3.5" fill="#22d3ee"/>
+<circle cx="488.7" cy="75.4" r="3.5" fill="#22d3ee"/>
+<circle cx="706.0" cy="69.0" r="3.5" fill="#22d3ee"/>
+<polyline points="54.0,116.2 271.3,91.7 488.7,78.4 706.0,72.2" fill="none" stroke="#818cf8" stroke-width="3"/>
+<circle cx="54.0" cy="116.2" r="3.5" fill="#818cf8"/>
+<circle cx="271.3" cy="91.7" r="3.5" fill="#818cf8"/>
+<circle cx="488.7" cy="78.4" r="3.5" fill="#818cf8"/>
+<circle cx="706.0" cy="72.2" r="3.5" fill="#818cf8"/>
+<polyline points="54.0,271.0 271.3,270.2 488.7,269.7 706.0,269.6" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
+<circle cx="54.0" cy="271.0" r="3.5" fill="#ef4444"/>
+<circle cx="271.3" cy="270.2" r="3.5" fill="#ef4444"/>
+<circle cx="488.7" cy="269.7" r="3.5" fill="#ef4444"/>
+<circle cx="706.0" cy="269.6" r="3.5" fill="#ef4444"/>
+<text x="380" y="330" class="axtitle">SNR (dB)</text>
+<text x="14" y="170" class="axtitle" transform="rotate(-90 14 170)">cross-vendor PSNR (dB)</text>
+</svg>
+
+<h2>Why this is the high-leverage move — and its honest limits</h2>
+<div class="card">
+<b>Why it matters:</b> the whole field agrees semantic coding <i>works</i>; interoperability is what stands between it
+and deployment, and it's what any standard must solve. Turning independently-trained models from mutually
+unintelligible into fully interoperable — without retraining them — is a direct contribution to that blocker, and it
+maps onto the urgent, adjacent need for a standard <b>AI-agent communication protocol</b>.<br><br>
+<b>Honest limits:</b> demonstrated at Fashion-MNIST scale on one codec family; the adapters still need <i>joint</i>
+calibration on shared data, which in practice means a governed reference and a calibration protocol (who owns the
+reference space is a real governance question, not a solved one); it aligns this JSCC latent family, not arbitrary
+task semantics; and everything remains simulation-stage. What's shown is that the mismatch is <b>fixable with a
+tiny, standardizable, base-frozen layer</b> — which is the part nobody had demonstrated cleanly.
+</div>
+
+<p class="sub" style="margin-top:18px">Reproduce: <code>python3 train_rosetta.py &amp;&amp; python3 evaluate.py &amp;&amp; python3 make_report.py</code>.
+Three independently-trained Latent Radio models; base weights frozen throughout.</p>
+</body></html>
