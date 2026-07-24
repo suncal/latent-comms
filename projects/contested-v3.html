@@ -1,0 +1,158 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rate-adaptivity &amp; reactive jamming — the honest mixed result</title>
+<style>
+ :root{color-scheme:light dark}
+ body{font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:880px;margin:0 auto;padding:34px 20px 60px;background:#0b0f19;color:#e5e7eb}
+ h1{font-size:27px;margin:0 0 4px} h2{font-size:20px;margin:34px 0 10px;border-bottom:1px solid #1f2937;padding-bottom:6px}
+ .tag{display:inline-block;font-size:12px;font-weight:600;color:#818cf8;border:1px solid #3730a3;background:#12142b;border-radius:999px;padding:3px 10px;margin-bottom:12px}
+ .sub{color:#9ca3af;margin:0 0 16px;max-width:78ch}
+ .card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:16px 20px;margin:14px 0}
+ .fail{border-color:#7c2d12;background:#1a1206} .win{border-color:#3730a3;background:#12142b}
+ .chart{width:100%;height:auto;background:#0b0f19;border-radius:8px}
+ .grid{stroke:#1f2937} text{fill:#9ca3af;font:11px sans-serif}
+ .ylab{text-anchor:end} .xlab{text-anchor:middle} .axtitle{fill:#6b7280;text-anchor:middle;font-size:12px}
+ .legend span{display:inline-block;margin:2px 16px 2px 0;font-size:13px}
+ .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}
+ .big{font-size:28px;font-weight:700} .stat{display:inline-block;margin:6px 24px 6px 0}
+ .stat .lab{display:block;color:#9ca3af;font-size:12px} .key{color:#818cf8;font-weight:600}
+ code{background:#1f2937;padding:1px 6px;border-radius:4px;font-size:13px}
+ .verdict b{color:#e5e7eb}
+</style></head><body>
+
+<div class="tag">CLOSING THE GAPS · RATE-ADAPTIVITY + REACTIVE JAMMING</div>
+<h1>Two fixes attempted. One failed, one worked.</h1>
+<p class="sub">The rigorous v2 test left two honest gaps: the learned code lost to digital in good channels, and it
+faced only a non-reactive jammer. Here I tried to close both — an SNR-adaptive encoder/decoder, and a reactive
+jammer with adversarial training. Reporting both outcomes straight, including the one that didn't pan out.</p>
+
+<h2>Attempt 1 — rate adaptivity <span style="color:#f97316">(did not close the gap)</span></h2>
+<p class="sub">Idea: condition the encoder and decoder on the operating SNR so they can encode fine detail when
+the channel is good and coarse-but-robust structure when it isn't — the JSCC analogue of adaptive modulation.</p>
+<div class="legend card"><span><span class="dot" style="background:#6366f1"></span>SNR-adaptive JSCC</span><span><span class="dot" style="background:#22d3ee"></span>non-adaptive JSCC (v2)</span><span><span class="dot" style="background:#f59e0b"></span>rate-adaptive digital</span></div>
+<svg viewBox="0 0 780 380" xmlns="http://www.w3.org/2000/svg" class="chart">
+<line x1="58" y1="322" x2="722" y2="322" class="grid"/>
+<text x="50" y="326" class="ylab">23</text>
+<line x1="58" y1="269" x2="722" y2="269" class="grid"/>
+<text x="50" y="273" class="ylab">25</text>
+<line x1="58" y1="216" x2="722" y2="216" class="grid"/>
+<text x="50" y="220" class="ylab">26</text>
+<line x1="58" y1="164" x2="722" y2="164" class="grid"/>
+<text x="50" y="168" class="ylab">27</text>
+<line x1="58" y1="111" x2="722" y2="111" class="grid"/>
+<text x="50" y="115" class="ylab">29</text>
+<line x1="58" y1="58" x2="722" y2="58" class="grid"/>
+<text x="50" y="62" class="ylab">30</text>
+<text x="58" y="342" class="xlab">-2</text>
+<text x="124" y="342" class="xlab">0</text>
+<text x="191" y="342" class="xlab">2</text>
+<text x="257" y="342" class="xlab">4</text>
+<text x="324" y="342" class="xlab">6</text>
+<text x="390" y="342" class="xlab">8</text>
+<text x="456" y="342" class="xlab">10</text>
+<text x="523" y="342" class="xlab">12</text>
+<text x="622" y="342" class="xlab">15</text>
+<text x="722" y="342" class="xlab">18</text>
+<line x1="324" y1="58" x2="324" y2="322" stroke="#475569" stroke-dasharray="4 4"/>
+<text x="329" y="70" style="fill:#94a3b8">crossover</text>
+<polyline points="58.0,245.5 124.4,229.7 190.8,220.1 257.2,212.9 323.6,208.2 390.0,205.3 456.4,203.5 522.8,202.3 622.4,201.0 722.0,200.5" fill="none" stroke="#6366f1" stroke-width="3"/>
+<circle cx="58.0" cy="245.5" r="3" fill="#6366f1"/>
+<circle cx="124.4" cy="229.7" r="3" fill="#6366f1"/>
+<circle cx="190.8" cy="220.1" r="3" fill="#6366f1"/>
+<circle cx="257.2" cy="212.9" r="3" fill="#6366f1"/>
+<circle cx="323.6" cy="208.2" r="3" fill="#6366f1"/>
+<circle cx="390.0" cy="205.3" r="3" fill="#6366f1"/>
+<circle cx="456.4" cy="203.5" r="3" fill="#6366f1"/>
+<circle cx="522.8" cy="202.3" r="3" fill="#6366f1"/>
+<circle cx="622.4" cy="201.0" r="3" fill="#6366f1"/>
+<circle cx="722.0" cy="200.5" r="3" fill="#6366f1"/>
+<polyline points="58.0,244.4 124.4,230.0 190.8,219.9 257.2,214.5 323.6,210.2 390.0,208.0 456.4,206.2 522.8,204.7 622.4,205.2 722.0,204.4" fill="none" stroke="#22d3ee" stroke-width="3" stroke-dasharray="2 3"/>
+<circle cx="58.0" cy="244.4" r="3" fill="#22d3ee"/>
+<circle cx="124.4" cy="230.0" r="3" fill="#22d3ee"/>
+<circle cx="190.8" cy="219.9" r="3" fill="#22d3ee"/>
+<circle cx="257.2" cy="214.5" r="3" fill="#22d3ee"/>
+<circle cx="323.6" cy="210.2" r="3" fill="#22d3ee"/>
+<circle cx="390.0" cy="208.0" r="3" fill="#22d3ee"/>
+<circle cx="456.4" cy="206.2" r="3" fill="#22d3ee"/>
+<circle cx="522.8" cy="204.7" r="3" fill="#22d3ee"/>
+<circle cx="622.4" cy="205.2" r="3" fill="#22d3ee"/>
+<circle cx="722.0" cy="204.4" r="3" fill="#22d3ee"/>
+<polyline points="58.0,285.5 124.4,266.5 190.8,246.6 257.2,227.1 323.6,208.1 390.0,188.0 456.4,166.3 522.8,145.3 622.4,119.9 722.0,94.5" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6 4"/>
+<circle cx="58.0" cy="285.5" r="3" fill="#f59e0b"/>
+<circle cx="124.4" cy="266.5" r="3" fill="#f59e0b"/>
+<circle cx="190.8" cy="246.6" r="3" fill="#f59e0b"/>
+<circle cx="257.2" cy="227.1" r="3" fill="#f59e0b"/>
+<circle cx="323.6" cy="208.1" r="3" fill="#f59e0b"/>
+<circle cx="390.0" cy="188.0" r="3" fill="#f59e0b"/>
+<circle cx="456.4" cy="166.3" r="3" fill="#f59e0b"/>
+<circle cx="522.8" cy="145.3" r="3" fill="#f59e0b"/>
+<circle cx="622.4" cy="119.9" r="3" fill="#f59e0b"/>
+<circle cx="722.0" cy="94.5" r="3" fill="#f59e0b"/>
+<text x="390" y="370" class="axtitle">SNR (dB)</text>
+<text x="15" y="190" class="axtitle" transform="rotate(-90 15 190)">PSNR (dB)</text>
+</svg>
+<div class="card fail">
+<b>The honest negative:</b> the SNR-adaptive curve sits almost exactly on the non-adaptive one, and both still
+lose to digital above ~6 dB (by 2.9 dB at 18 dB). Conditioning made the model <i>aware</i> of the
+SNR but didn't give it more to <i>send</i> — a fixed-bandwidth analog code can't manufacture the extra information
+a good channel could carry. The low-SNR-analog / high-SNR-digital <b>crossover is fundamental</b>, not a tuning
+artifact. Genuinely closing it needs a different mechanism — variable bandwidth (send more symbols when SNR allows)
+or a hybrid digital-analog code — not just conditioning. Worth knowing, and worth not overclaiming.</div>
+
+<h2>Attempt 2 — reactive jamming &amp; adversarial training <span style="color:#34d399">(worked)</span></h2>
+<p class="sub">A <b>follower jammer</b> senses which symbols carry the most energy and jams exactly those; a
+<b>worst-case adversarial jammer</b> runs gradient ascent to find the most damaging power-constrained perturbation.
+We compare the standard adaptive model against one <b>adversarially trained</b> against the follower jammer.</p>
+<div class="legend card"><span><span class="dot" style="background:#ef4444"></span>standard model</span><span><span class="dot" style="background:#818cf8"></span>adversarially-trained model</span></div>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" class="chart">
+<line x1="54" y1="286" x2="626" y2="286" class="grid"/>
+<text x="46" y="290" class="ylab">0</text>
+<line x1="54" y1="240" x2="626" y2="240" class="grid"/>
+<text x="46" y="244" class="ylab">6</text>
+<line x1="54" y1="193" x2="626" y2="193" class="grid"/>
+<text x="46" y="197" class="ylab">12</text>
+<line x1="54" y1="147" x2="626" y2="147" class="grid"/>
+<text x="46" y="151" class="ylab">18</text>
+<line x1="54" y1="100" x2="626" y2="100" class="grid"/>
+<text x="46" y="104" class="ylab">23</text>
+<line x1="54" y1="54" x2="626" y2="54" class="grid"/>
+<text x="46" y="58" class="ylab">29</text>
+<rect x="82.6" y="78.9" width="63.7" height="207.1" rx="3" fill="#ef4444"/>
+<text x="115.0" y="73.9" style="fill:#e5e7eb;text-anchor:middle;font-size:11px">26.2</text>
+<rect x="149.3" y="85.1" width="63.7" height="200.9" rx="3" fill="#818cf8"/>
+<text x="181.7" y="80.1" style="fill:#e5e7eb;text-anchor:middle;font-size:11px">25.4</text>
+<text x="149.3" y="306" class="xlab">no jammer</text>
+<rect x="273.3" y="128.6" width="63.7" height="157.4" rx="3" fill="#ef4444"/>
+<text x="305.6" y="123.6" style="fill:#e5e7eb;text-anchor:middle;font-size:11px">19.9</text>
+<rect x="340.0" y="104.9" width="63.7" height="181.1" rx="3" fill="#818cf8"/>
+<text x="372.4" y="99.9" style="fill:#e5e7eb;text-anchor:middle;font-size:11px">22.9</text>
+<text x="340.0" y="306" class="xlab">follower jammer</text>
+<rect x="463.9" y="107.4" width="63.7" height="178.6" rx="3" fill="#ef4444"/>
+<text x="496.3" y="102.4" style="fill:#e5e7eb;text-anchor:middle;font-size:11px">22.6</text>
+<rect x="530.7" y="103.6" width="63.7" height="182.4" rx="3" fill="#818cf8"/>
+<text x="563.0" y="98.6" style="fill:#e5e7eb;text-anchor:middle;font-size:11px">23.0</text>
+<text x="530.7" y="306" class="xlab">worst-case adversarial</text>
+</svg>
+<div class="card win">
+<div class="stat"><span class="big" style="color:#ef4444">−6.3 dB</span><span class="lab">the follower jammer's damage to the standard model</span></div>
+<div class="stat"><span class="big" style="color:#818cf8">+3.0 dB</span><span class="lab">recovered by adversarial training</span></div>
+<p style="margin:8px 0 0">A sensing jammer is a <b>real threat</b> to a neural link — it cuts the standard model from
+26.2 to 19.9 dB. Training against it recovers 3.0 dB, and the robustness
+<b>transfers</b> to the worst-case adversarial jammer (23.0 vs 22.6 dB). The
+cost is small: 0.8 dB on a clean channel. This is the defense-relevant win — and it says a neural comms
+system must be <b>adversarially hardened by design</b>, not just trained on nice noise.</p>
+</div>
+
+<h2>Honest verdict</h2>
+<div class="card verdict">
+Two attempts, reported straight: <b>rate-adaptivity via conditioning failed</b> to beat digital in good channels
+(the crossover is fundamental to analog JSCC — a real architectural limit, not a bug), while <b>adversarial
+training succeeded</b> at defending a reactive jammer that badly hurts an unhardened model. Net picture across
+v1→v3: this technology's honest home is the <b>hard, contested, low-SNR regime</b> — where it degrades gracefully,
+never outages, and (once hardened) resists smart jamming — and it should <b>hand off to classical coding when the
+channel is good</b>. Remaining gaps stay as stated in v2: still a simulation, perfect receiver CSI, information-
+theoretic digital baseline, and hallucination risk that argues for verifiable residuals in critical uses.
+</div>
+
+<p class="sub" style="margin-top:20px">Reproduce: <code>python3 train.py both &amp;&amp; python3 evaluate.py &amp;&amp; python3 make_report.py</code>.</p>
+</body></html>

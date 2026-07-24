@@ -1,0 +1,143 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HRM — Harmonic Resonance Mixer</title>
+<style>
+ :root{color-scheme:light dark}
+ body{font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:860px;margin:0 auto;padding:34px 20px;background:#0b0f19;color:#e5e7eb}
+ h1{font-size:27px;margin:0 0 4px} h2{font-size:20px;margin:38px 0 10px;border-bottom:1px solid #1f2937;padding-bottom:6px}
+ h3{font-size:15px;color:#a5b4fc;margin:22px 0 6px;text-transform:uppercase;letter-spacing:.05em}
+ .sub{color:#9ca3af;margin:0 0 18px}
+ .card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:16px 20px;margin:14px 0}
+ .win{border-color:#4338ca;background:#12142b}
+ table{width:100%;border-collapse:collapse;font-size:14px}
+ td,th{padding:8px 10px;border-bottom:1px solid #1f2937;text-align:left} th{color:#9ca3af;font-weight:600}
+ .num{text-align:right;font-variant-numeric:tabular-nums} .center{text-align:center} .muted{color:#9ca3af;font-size:13px}
+ .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}
+ .chart{width:100%;height:auto;background:#0b0f19;border-radius:8px;margin-top:6px}
+ .grid{stroke:#1f2937} .baseline{stroke:#64748b;stroke-dasharray:5 4}
+ text{fill:#9ca3af;font:11px sans-serif} .baselab{fill:#64748b;text-anchor:end}
+ .ylab{text-anchor:end} .xlab{text-anchor:middle} .axtitle{fill:#6b7280;text-anchor:middle;font-size:12px}
+ .legend span{margin-right:16px;font-size:13px;white-space:nowrap}
+ .key{color:#818cf8;font-weight:600} code{background:#1f2937;padding:1px 6px;border-radius:4px;font-size:13px}
+ .big{font-size:30px;font-weight:700} .vs{color:#6b7280;font-size:15px;margin:0 8px}
+ .stat{display:inline-block;margin:6px 24px 6px 0} .stat .lab{display:block;color:#9ca3af;font-size:12px}
+</style></head><body>
+
+<h1>HRM — Harmonic Resonance Mixer</h1>
+<p class="sub">A from-scratch sequence-memory architecture with a novel selective-resonance mechanism —
+built, trained, and validated by controlled ablation. No pretrained weights, no external data.</p>
+
+<div class="card">
+<b>The mechanism.</b> Memory is a bank of learnable <span class="key">damped oscillators</span> — each channel a
+2-D state rotated by a learnable frequency ω and shrunk by a decay each step. On top of that sits the novel piece,
+a <span class="key">selective damping gate</span>: a content-based gate sets each channel's decay per-timestep, so
+the network learns which frequency channels to <i>latch</i> vs. <i>forget</i>. Readout is per-channel resonator
+<span class="key">energy</span> √(a²+b²), which is phase-invariant.
+</div>
+
+<h2>Headline result — noise-robust frequency identification</h2>
+<p class="sub">Classify which of 5 frequencies is hidden in a noisy, random-phase signal
+(T=100). This is the task family a resonator bank is built for.</p>
+
+<div class="card win">
+<div class="stat"><span class="big" style="color:#818cf8">70%</span><span class="lab">HRM-full @ noise 3.0</span></div>
+<span class="vs">vs</span>
+<div class="stat"><span class="big" style="color:#f59e0b">43%</span><span class="lab">GRU @ noise 3.0</span></div>
+<p style="margin:8px 0 0">At the hardest noise level the GRU baseline collapses toward chance while HRM stays strong —
+a genuine architectural advantage, at comparable parameter count.</p>
+</div>
+
+<h3>Accuracy vs. noise (HRM-full vs GRU, trained identically at each level)</h3>
+<div class="legend card"><span><span class="dot" style="background:#6366f1"></span>HRM-full</span><span><span class="dot" style="background:#f59e0b"></span>GRU</span></div>
+<svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" class="chart">
+<line x1="56" y1="344" x2="704" y2="344" class="grid"/>
+<text x="48" y="348" class="ylab">0.0</text>
+<line x1="56" y1="286" x2="704" y2="286" class="grid"/>
+<text x="48" y="290" class="ylab">0.2</text>
+<line x1="56" y1="229" x2="704" y2="229" class="grid"/>
+<text x="48" y="233" class="ylab">0.4</text>
+<line x1="56" y1="171" x2="704" y2="171" class="grid"/>
+<text x="48" y="175" class="ylab">0.6</text>
+<line x1="56" y1="114" x2="704" y2="114" class="grid"/>
+<text x="48" y="118" class="ylab">0.8</text>
+<line x1="56" y1="56" x2="704" y2="56" class="grid"/>
+<text x="48" y="60" class="ylab">1.0</text>
+<text x="164" y="364" class="xlab">0.5</text>
+<text x="272" y="364" class="xlab">1.0</text>
+<text x="380" y="364" class="xlab">1.5</text>
+<text x="488" y="364" class="xlab">2.0</text>
+<text x="596" y="364" class="xlab">2.5</text>
+<text x="704" y="364" class="xlab">3.0</text>
+<line x1="56" y1="286" x2="704" y2="286" class="baseline"/>
+<text x="704" y="280" class="baselab">chance</text>
+<polyline points="164.0,56.0 272.0,57.0 380.0,60.5 488.0,79.9 596.0,110.1 704.0,143.1" fill="none" stroke="#6366f1" stroke-width="3"/>
+<circle cx="164.0" cy="56.0" r="4" fill="#6366f1"/>
+<circle cx="272.0" cy="57.0" r="4" fill="#6366f1"/>
+<circle cx="380.0" cy="60.5" r="4" fill="#6366f1"/>
+<circle cx="488.0" cy="79.9" r="4" fill="#6366f1"/>
+<circle cx="596.0" cy="110.1" r="4" fill="#6366f1"/>
+<circle cx="704.0" cy="143.1" r="4" fill="#6366f1"/>
+<polyline points="164.0,147.3 272.0,56.6 380.0,74.9 488.0,160.7 596.0,189.8 704.0,219.9" fill="none" stroke="#f59e0b" stroke-width="3"/>
+<circle cx="164.0" cy="147.3" r="4" fill="#f59e0b"/>
+<circle cx="272.0" cy="56.6" r="4" fill="#f59e0b"/>
+<circle cx="380.0" cy="74.9" r="4" fill="#f59e0b"/>
+<circle cx="488.0" cy="160.7" r="4" fill="#f59e0b"/>
+<circle cx="596.0" cy="189.8" r="4" fill="#f59e0b"/>
+<circle cx="704.0" cy="219.9" r="4" fill="#f59e0b"/>
+<text x="380" y="390" class="axtitle">noise level (std of additive Gaussian noise)</text>
+<text x="14" y="200" class="axtitle" transform="rotate(-90 14 200)">test accuracy</text>
+</svg>
+
+<h3>Learning curves at noise 2.0</h3>
+<div class="legend card"><span><span class="dot" style="background:#f59e0b"></span>GRU</span><span><span class="dot" style="background:#6366f1"></span>HRM-full</span><span><span class="dot" style="background:#ef4444"></span>HRM-noGate</span><span><span class="dot" style="background:#10b981"></span>HRM-noOsc</span></div>
+<svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" class="chart">
+<line x1="54" y1="326" x2="706" y2="326" class="grid"/>
+<text x="46" y="330" class="ylab">0.0</text>
+<line x1="54" y1="272" x2="706" y2="272" class="grid"/>
+<text x="46" y="276" class="ylab">0.2</text>
+<line x1="54" y1="217" x2="706" y2="217" class="grid"/>
+<text x="46" y="221" class="ylab">0.4</text>
+<line x1="54" y1="163" x2="706" y2="163" class="grid"/>
+<text x="46" y="167" class="ylab">0.6</text>
+<line x1="54" y1="108" x2="706" y2="108" class="grid"/>
+<text x="46" y="112" class="ylab">0.8</text>
+<line x1="54" y1="54" x2="706" y2="54" class="grid"/>
+<text x="46" y="58" class="ylab">1.0</text>
+<text x="54" y="346" class="xlab">0</text>
+<text x="217" y="346" class="xlab">300</text>
+<text x="380" y="346" class="xlab">600</text>
+<text x="543" y="346" class="xlab">900</text>
+<text x="706" y="346" class="xlab">1200</text>
+<polyline points="54.5,272.8 108.3,268.3 162.7,227.5 217.0,210.8 271.3,167.3 325.7,150.6 380.0,140.9 434.3,131.9 488.7,124.2 543.0,125.0 597.3,120.6 651.7,113.8 706.0,112.1" fill="none" stroke="#f59e0b" stroke-width="2.5"/>
+<polyline points="54.5,271.6 108.3,227.4 162.7,140.0 217.0,93.8 271.3,79.2 325.7,80.5 380.0,79.6 434.3,75.9 488.7,74.1 543.0,74.5 597.3,75.1 651.7,74.8 706.0,72.9" fill="none" stroke="#6366f1" stroke-width="2.5"/>
+<polyline points="54.5,273.8 108.3,264.9 162.7,242.5 217.0,236.6 271.3,220.6 325.7,215.3 380.0,186.7 434.3,184.7 488.7,181.7 543.0,180.6 597.3,175.3 651.7,176.1 706.0,170.3" fill="none" stroke="#ef4444" stroke-width="2.5"/>
+<polyline points="54.5,270.5 108.3,267.9 162.7,272.7 217.0,267.7 271.3,273.4 325.7,270.4 380.0,264.7 434.3,267.7 488.7,266.4 543.0,261.8 597.3,263.0 651.7,264.7 706.0,261.9" fill="none" stroke="#10b981" stroke-width="2.5"/>
+<text x="380" y="370" class="axtitle">training step</text>
+<text x="14" y="190" class="axtitle" transform="rotate(-90 14 190)">test accuracy</text>
+</svg>
+
+<h3>Final results — frequency task</h3>
+<table><tr><th>model</th><th>what it is</th><th>params</th><th>best acc</th></tr><tr><td><span class='dot' style='background:#6366f1'></span>HRM-full</td><td class='muted'>resonant memory + selective damping gate (proposed)</td><td class='num'>9,893</td><td class='num'>0.930</td></tr><tr><td><span class='dot' style='background:#f59e0b'></span>GRU</td><td class='muted'>standard gated RNN (baseline)</td><td class='num'>7,589</td><td class='num'>0.786</td></tr><tr><td><span class='dot' style='background:#ef4444'></span>HRM-noGate</td><td class='muted'>ablation: novel gate removed</td><td class='num'>9,893</td><td class='num'>0.572</td></tr><tr><td><span class='dot' style='background:#10b981'></span>HRM-noOsc</td><td class='muted'>ablation: resonance removed</td><td class='num'>9,893</td><td class='num'>0.236</td></tr></table>
+
+<div class="card">
+<b>What the ablation proves.</b> Removing the resonance (freezing ω=0) drops accuracy from
+<b>0.93</b> to <b>0.24</b> — the oscillatory memory is doing the work, not the parameter budget.
+HRM matches or beats the GRU (0.93 vs 0.79) here and pulls clearly ahead as noise rises.
+</div>
+
+<h2>Honest limitation — the adding problem</h2>
+<p class="sub">The other side of the inductive-bias coin: a task of pure <i>delayed scalar recall</i>
+(sum two marked values across T=120 steps), where resonance is the wrong prior.</p>
+<table><tr><th>model</th><th>what it is</th><th>params</th><th>test MSE</th><th>solved</th></tr><tr><td><span class='dot' style='background:#f59e0b'></span>GRU</td><td class='muted'>standard gated RNN</td><td class='num'>7,537</td><td class='num'>0.0004</td><td class='center'>✓</td></tr><tr><td><span class='dot' style='background:#6366f1'></span>HRM-full</td><td class='muted'>proposed</td><td class='num'>9,729</td><td class='num'>0.1531</td><td class='center'>—</td></tr><tr><td><span class='dot' style='background:#10b981'></span>HRM-noOsc</td><td class='muted'>ablation: resonance removed</td><td class='num'>9,729</td><td class='num'>0.1655</td><td class='center'>—</td></tr><tr><td><span class='dot' style='background:#ef4444'></span>HRM-noGate</td><td class='muted'>ablation: gate removed</td><td class='num'>9,729</td><td class='num'>0.1668</td><td class='center'>—</td></tr><tr><td><span class='dot' style='background:#94a3b8'></span>MLP</td><td class='muted'>no memory (control)</td><td class='num'>47,489</td><td class='num'>0.1668</td><td class='center'>—</td></tr></table>
+<div class="card">
+Here the GRU solves the task while <b>every HRM variant stalls near the constant-guess baseline</b> — resonance
+buys nothing. The reason is structural: an oscillator rotates a stored value by ω·(T−t), and because the gap
+between marker and readout varies per example, the value lands at a delay-dependent phase a linear head can't
+recover; the resonator bank has no way to select <i>which</i> inputs to write either. Lesson, stated plainly:
+HRM's resonant memory is a specialized prior — it excels at frequency/periodic structure and is a poor fit for
+arbitrary-delay recall. That trade-off is exactly why both tasks are shown.
+</div>
+
+<p class="muted" style="margin-top:26px">Constant-guess MSE baseline on the adding problem = 0.167.
+Reproduce everything: <code>python3 train_freq.py &amp;&amp; python3 sweep.py &amp;&amp; python3 train.py &amp;&amp; python3 make_report.py</code>.</p>
+</body></html>

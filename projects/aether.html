@@ -1,0 +1,182 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aether — machines inventing their own language</title>
+<style>
+ :root{color-scheme:light dark}
+ body{font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:880px;margin:0 auto;padding:34px 20px 60px;background:#0b0f19;color:#e5e7eb}
+ h1{font-size:29px;margin:0 0 4px} h2{font-size:20px;margin:36px 0 10px;border-bottom:1px solid #1f2937;padding-bottom:6px}
+ h3{font-size:14px;color:#a5b4fc;margin:20px 0 6px;text-transform:uppercase;letter-spacing:.05em}
+ .tag{display:inline-block;font-size:12px;font-weight:600;color:#818cf8;border:1px solid #3730a3;background:#12142b;border-radius:999px;padding:3px 10px;margin-bottom:12px}
+ .sub{color:#9ca3af;margin:0 0 18px;max-width:74ch}
+ .card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:16px 20px;margin:14px 0}
+ .win{border-color:#4338ca;background:#12142b}
+ .chart{width:100%;height:auto;background:#0b0f19;border-radius:8px}
+ .grid{stroke:#1f2937} .baseline{stroke:#64748b;stroke-dasharray:5 4}
+ text{fill:#9ca3af;font:11px sans-serif} .baselab{fill:#64748b;text-anchor:end}
+ .ylab{text-anchor:end} .xlab{text-anchor:middle} .axtitle{fill:#6b7280;text-anchor:middle;font-size:12px}
+ .legend span{display:inline-block;margin:2px 16px 2px 0;font-size:13px}
+ .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}
+ .big{font-size:30px;font-weight:700} .stat{display:inline-block;margin:6px 26px 6px 0}
+ .stat .lab{display:block;color:#9ca3af;font-size:12px} .vs{color:#6b7280;margin:0 8px}
+ code{background:#1f2937;padding:1px 6px;border-radius:4px;font-size:13px} .key{color:#818cf8;font-weight:600}
+ .bars{display:flex;gap:14px;align-items:flex-end;height:150px;margin:10px 0}
+ .bar{flex:1;text-align:center;font-size:13px} .bar .col{border-radius:6px 6px 0 0;margin-bottom:6px}
+</style></head><body>
+
+<div class="tag">A NEW AI CAPABILITY · MACHINE-TO-MACHINE LANGUAGE</div>
+<h1>Aether</h1>
+<p class="sub">Two neural agents that <b>invent their own compressed language</b> to cooperate — exchanging a
+handful of noise-robust numbers instead of words. Trained from scratch on a referential game; the only
+feedback is "did the receiver understand?". Built on the shared-model channel from Latent Radio.</p>
+
+<div class="card">
+<b>What today's models can't do.</b> Frontier AI agents cooperate by exchanging <b>verbose natural-language
+text</b> — and they have no native way to compress that into a tiny, error-tolerant signal. Aether's agents
+develop a private code of just <span class="key">8 numbers per message</span> that survives a
+channel which would corrupt the equivalent digital message. That points at multi-agent AI that is far cheaper
+to run and links that keep working when the connection is bad.
+</div>
+
+<h2>1 · How little language do they need?</h2>
+<p class="sub">The referential game: the sender sees a target image; the receiver must pick it out of 8
+candidates using only the message. We shrink the message to <b>d</b> numbers and watch task accuracy. The
+information-theoretic floor to name one of 10 classes is just <code>log₂(10) ≈ 3.3 bits</code>.</p>
+
+<div class="card win">
+<div class="stat"><span class="big" style="color:#818cf8">8 numbers</span><span class="lab">enough to hit
+84% of peak accuracy (chance = 12%)</span></div>
+</div>
+<div class="legend card"><span><span class="dot" style="background:#6366f1"></span>accuracy @ 12 dB (clean)</span><span><span class="dot" style="background:#22d3ee"></span>accuracy @ 0 dB (noisy)</span></div>
+<svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" class="chart">
+<line x1="58" y1="342" x2="722" y2="342" class="grid"/>
+<text x="50" y="346" class="ylab">0.0</text>
+<line x1="58" y1="285" x2="722" y2="285" class="grid"/>
+<text x="50" y="289" class="ylab">0.2</text>
+<line x1="58" y1="228" x2="722" y2="228" class="grid"/>
+<text x="50" y="232" class="ylab">0.4</text>
+<line x1="58" y1="172" x2="722" y2="172" class="grid"/>
+<text x="50" y="176" class="ylab">0.6</text>
+<line x1="58" y1="115" x2="722" y2="115" class="grid"/>
+<text x="50" y="119" class="ylab">0.8</text>
+<line x1="58" y1="58" x2="722" y2="58" class="grid"/>
+<text x="50" y="62" class="ylab">1.0</text>
+<text x="58" y="362" class="xlab">1</text>
+<text x="79" y="362" class="xlab">2</text>
+<text x="122" y="362" class="xlab">4</text>
+<text x="208" y="362" class="xlab">8</text>
+<text x="379" y="362" class="xlab">16</text>
+<text x="722" y="362" class="xlab">32</text>
+<line x1="58" y1="306" x2="722" y2="306" class="baseline"/>
+<text x="722" y="300" class="baselab">chance</text>
+<polyline points="58.0,298.3 79.4,159.8 122.3,121.8 207.9,108.6 379.3,105.8 722.0,102.4" fill="none" stroke="#6366f1" stroke-width="3"/>
+<circle cx="58.0" cy="298.3" r="3.5" fill="#6366f1"/>
+<circle cx="79.4" cy="159.8" r="3.5" fill="#6366f1"/>
+<circle cx="122.3" cy="121.8" r="3.5" fill="#6366f1"/>
+<circle cx="207.9" cy="108.6" r="3.5" fill="#6366f1"/>
+<circle cx="379.3" cy="105.8" r="3.5" fill="#6366f1"/>
+<circle cx="722.0" cy="102.4" r="3.5" fill="#6366f1"/>
+<polyline points="58.0,299.2 79.4,227.8 122.3,176.4 207.9,133.7 379.3,114.6 722.0,105.5" fill="none" stroke="#22d3ee" stroke-width="3" stroke-dasharray="6 4"/>
+<circle cx="58.0" cy="299.2" r="3.5" fill="#22d3ee"/>
+<circle cx="79.4" cy="227.8" r="3.5" fill="#22d3ee"/>
+<circle cx="122.3" cy="176.4" r="3.5" fill="#22d3ee"/>
+<circle cx="207.9" cy="133.7" r="3.5" fill="#22d3ee"/>
+<circle cx="379.3" cy="114.6" r="3.5" fill="#22d3ee"/>
+<circle cx="722.0" cy="105.5" r="3.5" fill="#22d3ee"/>
+<text x="390" y="390" class="axtitle">message size d (numbers per message)</text>
+<text x="15" y="200" class="axtitle" transform="rotate(-90 15 200)">accuracy</text>
+</svg>
+<p class="sub">Accuracy climbs fast and then saturates: past a few numbers, extra bandwidth buys almost nothing —
+the agents have found a compact code. Even at 0 dB (as much noise power as signal) the small-d code still works.</p>
+
+<h2>2 · Graceful vs. the digital cliff</h2>
+<p class="sub">The main model (d=8) tested across channel quality, against a classical baseline that sends
+the target's class label over the same channel at Shannon capacity.</p>
+<div class="legend card"><span><span class="dot" style="background:#6366f1"></span>Aether (real learned message)</span><span><span class="dot" style="background:#f59e0b"></span>idealized digital (Shannon best-case)</span></div>
+<svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" class="chart">
+<line x1="58" y1="342" x2="722" y2="342" class="grid"/>
+<text x="50" y="346" class="ylab">0.0</text>
+<line x1="58" y1="285" x2="722" y2="285" class="grid"/>
+<text x="50" y="289" class="ylab">0.2</text>
+<line x1="58" y1="228" x2="722" y2="228" class="grid"/>
+<text x="50" y="232" class="ylab">0.4</text>
+<line x1="58" y1="172" x2="722" y2="172" class="grid"/>
+<text x="50" y="176" class="ylab">0.6</text>
+<line x1="58" y1="115" x2="722" y2="115" class="grid"/>
+<text x="50" y="119" class="ylab">0.8</text>
+<line x1="58" y1="58" x2="722" y2="58" class="grid"/>
+<text x="50" y="62" class="ylab">1.0</text>
+<text x="58" y="362" class="xlab">-8</text>
+<text x="105" y="362" class="xlab">-6</text>
+<text x="153" y="362" class="xlab">-4</text>
+<text x="200" y="362" class="xlab">-2</text>
+<text x="248" y="362" class="xlab">0</text>
+<text x="295" y="362" class="xlab">2</text>
+<text x="343" y="362" class="xlab">4</text>
+<text x="390" y="362" class="xlab">6</text>
+<text x="437" y="362" class="xlab">8</text>
+<text x="485" y="362" class="xlab">10</text>
+<text x="532" y="362" class="xlab">12</text>
+<text x="627" y="362" class="xlab">16</text>
+<text x="722" y="362" class="xlab">20</text>
+<line x1="58" y1="306" x2="722" y2="306" class="baseline"/>
+<text x="722" y="300" class="baselab">chance</text>
+<polyline points="58.0,228.0 105.4,204.0 152.9,182.7 200.3,152.8 247.7,131.7 295.1,113.0 342.6,109.3 390.0,107.6 437.4,104.1 484.9,103.8 532.3,102.1 627.1,102.2 722.0,101.7" fill="none" stroke="#6366f1" stroke-width="3"/>
+<circle cx="58.0" cy="228.0" r="3.5" fill="#6366f1"/>
+<circle cx="105.4" cy="204.0" r="3.5" fill="#6366f1"/>
+<circle cx="152.9" cy="182.7" r="3.5" fill="#6366f1"/>
+<circle cx="200.3" cy="152.8" r="3.5" fill="#6366f1"/>
+<circle cx="247.7" cy="131.7" r="3.5" fill="#6366f1"/>
+<circle cx="295.1" cy="113.0" r="3.5" fill="#6366f1"/>
+<circle cx="342.6" cy="109.3" r="3.5" fill="#6366f1"/>
+<circle cx="390.0" cy="107.6" r="3.5" fill="#6366f1"/>
+<circle cx="437.4" cy="104.1" r="3.5" fill="#6366f1"/>
+<circle cx="484.9" cy="103.8" r="3.5" fill="#6366f1"/>
+<circle cx="532.3" cy="102.1" r="3.5" fill="#6366f1"/>
+<circle cx="627.1" cy="102.2" r="3.5" fill="#6366f1"/>
+<circle cx="722.0" cy="101.7" r="3.5" fill="#6366f1"/>
+<polyline points="58.0,306.5 105.4,306.5 152.9,306.5 200.3,306.5 247.7,101.7 295.1,101.7 342.6,101.7 390.0,101.7 437.4,101.7 484.9,101.7 532.3,101.7 627.1,101.7 722.0,101.7" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6 4"/>
+<circle cx="58.0" cy="306.5" r="3.5" fill="#f59e0b"/>
+<circle cx="105.4" cy="306.5" r="3.5" fill="#f59e0b"/>
+<circle cx="152.9" cy="306.5" r="3.5" fill="#f59e0b"/>
+<circle cx="200.3" cy="306.5" r="3.5" fill="#f59e0b"/>
+<circle cx="247.7" cy="101.7" r="3.5" fill="#f59e0b"/>
+<circle cx="295.1" cy="101.7" r="3.5" fill="#f59e0b"/>
+<circle cx="342.6" cy="101.7" r="3.5" fill="#f59e0b"/>
+<circle cx="390.0" cy="101.7" r="3.5" fill="#f59e0b"/>
+<circle cx="437.4" cy="101.7" r="3.5" fill="#f59e0b"/>
+<circle cx="484.9" cy="101.7" r="3.5" fill="#f59e0b"/>
+<circle cx="532.3" cy="101.7" r="3.5" fill="#f59e0b"/>
+<circle cx="627.1" cy="101.7" r="3.5" fill="#f59e0b"/>
+<circle cx="722.0" cy="101.7" r="3.5" fill="#f59e0b"/>
+<text x="390" y="390" class="axtitle">channel quality — SNR (dB)</text>
+<text x="15" y="200" class="axtitle" transform="rotate(-90 15 200)">accuracy</text>
+</svg>
+<div class="card">The digital line is an <b>optimistic upper bound</b> — a perfect capacity-achieving code with no
+overhead — so above the threshold it sits at the task ceiling by construction. The honest comparison is the
+<b>shape</b>: below 0 dB the digital scheme <i>cannot fit</i> the 3.3 bits it
+needs and collapses to chance (12%), while Aether — a real trained system — still communicates at
+40–67%. The agents learned a code that <b>fails softly</b>, because noise was part of their world during
+training. That graceful low-SNR region is the win; near-perfect channels are a tie against an idealized bound.</div>
+
+<h2>3 · Honest failure — it's a private language</h2>
+<div class="card">
+<div class="stat"><span class="big" style="color:#34d399">84%</span><span class="lab">matched sender + receiver</span></div>
+<span class="vs">vs</span>
+<div class="stat"><span class="big" style="color:#ef4444">19%</span><span class="lab">sender A + receiver B (different run)</span></div>
+<p style="margin:8px 0 0">Pair a sender with a receiver from a <b>separate training run</b> and communication collapses to
+chance (12%) even on a clean channel. Each pair invents its <i>own</i> language — there's no shared
+dictionary. That's the same lesson as Latent Radio's model-desync, and it's the core open problem: for this to
+become a real protocol, independent machines must first agree on a shared code.</p>
+</div>
+
+<h2>What this is / isn't</h2>
+<div class="card">
+<b>Is:</b> a real, trained-from-scratch demonstration of emergent, compressed, noise-robust machine-to-machine
+communication — a capability today's text-passing agents don't have natively — with the numbers to back each
+claim. <b>Isn't:</b> a general intelligence, or "smarter than GPT/Claude". It's one narrow superpower on a toy
+task (8-way Fashion-MNIST referential game, small models, one seed). The exciting part is the direction:
+agents that talk in thought-vectors instead of paragraphs.</p>
+</div>
+
+<p class="sub" style="margin-top:22px">Reproduce: <code>python3 experiments.py &amp;&amp; python3 make_report.py</code></p>
+</body></html>

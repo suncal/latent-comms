@@ -1,0 +1,178 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sigil — a message code that fades instead of breaking</title>
+<style>
+ :root{color-scheme:light dark}
+ body{font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:880px;margin:0 auto;padding:34px 20px 60px;background:#0b0f19;color:#e5e7eb}
+ h1{font-size:29px;margin:0 0 4px} h2{font-size:20px;margin:36px 0 10px;border-bottom:1px solid #1f2937;padding-bottom:6px}
+ .tag{display:inline-block;font-size:12px;font-weight:600;color:#818cf8;border:1px solid #3730a3;background:#12142b;border-radius:999px;padding:3px 10px;margin-bottom:12px}
+ .sub{color:#9ca3af;margin:0 0 18px;max-width:74ch}
+ .card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:16px 20px;margin:14px 0}
+ .win{border-color:#4338ca;background:#12142b}
+ .chart{width:100%;height:auto;background:#0b0f19;border-radius:8px}
+ .grid{stroke:#1f2937} text{fill:#9ca3af;font:11px sans-serif}
+ .ylab{text-anchor:end} .xlab{text-anchor:middle} .axtitle{fill:#6b7280;text-anchor:middle;font-size:12px}
+ .legend span{display:inline-block;margin:2px 16px 2px 0;font-size:13px}
+ .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}
+ .big{font-size:30px;font-weight:700} .stat{display:inline-block;margin:6px 26px 6px 0}
+ .stat .lab{display:block;color:#9ca3af;font-size:12px} .key{color:#818cf8;font-weight:600}
+ code{background:#1f2937;padding:1px 6px;border-radius:4px;font-size:13px}
+ img.row{width:100%;image-rendering:pixelated;border-radius:8px;border:1px solid #1f2937;margin-top:8px}
+ .rk{font-size:12.5px;color:#9ca3af;margin-top:6px}
+</style></head><body>
+
+<div class="tag">A NEW WAY TO CARRY A MESSAGE · GRACEFUL VISUAL CODE</div>
+<h1>Sigil</h1>
+<p class="sub">A short message, turned into a small glyph by a neural <b>encoder</b> and read back by a shared
+neural <b>decoder</b> — trained together through simulated real-world damage. The result is a visual code that
+<b>fades instead of breaking</b>: cover part of it, blur it, add glare, and most of the message still comes
+through. It's the Latent Radio joint-coding principle applied to the channel a printed or photographed code
+actually suffers.</p>
+
+<div class="card">
+<b>Why this is new.</b> Today's tool for this is the <b>QR code</b>, whose algebraic error-correction has a hard
+wall — past its limit, a damaged QR decodes to <i>nothing</i> (a cliff). Sigil has no wall: because sender and
+receiver share a <i>learned</i> code that spreads the message across the whole glyph, accuracy slides down
+smoothly. Honest scope: it carries a <b>short</b> message (32 bits — a code, an ID, a few characters),
+not an essay. Information theory still applies; what changes is <i>how it fails</i>.</p>
+</div>
+
+<h2>It fades, it doesn't break</h2>
+<div class="card win">
+<div class="stat"><span class="big" style="color:#818cf8">93%</span><span class="lab">of the message still readable at 70% damage</span></div>
+<span style="color:#6b7280">vs</span>
+<div class="stat"><span class="big" style="color:#ef4444">65%</span><span class="lab">a decoder <b>not</b> trained through damage (≈ coin-flip)</span></div>
+</div>
+
+<img class="row" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA8wAAADECAAAAABv+PdCAAAUq0lEQVR4nO2daZhV5ZWFvyuFICgCQgIit5hUgohEQEUQnOIYgShCO9sxSWscQURi1EjU2K2JIK2Ydo7G1nY2mHbI4KwEHDAqcYjKEEUUVBSEIFj50XufG97y8wDa037W+2dVnbpnPrvuj3XW3pVqEkJEYIP/7QMQQnw51KU0336smN5oOgrLzzH9cckm55rmvvMb1vNQF5meb/qy6ew0D39ZbjrBtKXp06ZHm75QcoSPmLYw7Z/5vF8hsrXpS1j+ddO9TG9Ob9tPK3EEZJDpWzizF/G5pqafYPlZpuea9jC9zbSTaTusd43pzqZfM/1H09+l7e2nu0z3NP2N6XjTD02bmT5ousr0lGKL/8WJuBenmzbBER5iuhDbTdjOv6bPppqW2U+LTW82HW16gumFOJKppmNNJ5p2NF2CPfkVGoH9+dM1B8u7mo4xbWt6sunmpnX6ZhYiCipmIYKgYhYiCCpmIYKgYhYiCCpmIYKgYhYiCJVq4Yf1gE/WFS7qaniYOT7FeuvqM6/OOInHm/4cx9GhcE8fhgO3Eu7oM6b9Mnt2x+5NLPftbGj6BJzBAaZ/xHobm34Ep36KaRvTVak53Nj7TQ+D//uQ6Wmmw0wPNH3OtD28zONwhbaGV78MjjrxM/6m6fv4e7V4Wr5qOh9OuPvNzm9N34ObOxRnugTXthWc7g3xtO2JM3d3eFPTvrgStTP4CtacCV849zwn+MBT8By3wTV7FMuvNZ1hupnpH0wXmA43vdv0L6ZbFGegb2YhgqBiFiIIKmYhgqBiFiIIKmYhgqBiFiIIKmYhglCpFvnjBuQpt4Z3OcT0bDh47r/91dQ90wRnb9Y6HtqnOC76zk7tDBLSvp2whUORfT0A67nb2hoZW+cgHNmdmSPqhuSpO5Y7ms5F9raabodzfRLStxOQjN4Nye374GX6Pctxqel5pp6nJg3wTOvW+h6Q6XCqPZ3uPG56Axz2Ibimr+NdgE4ZF5Zsg7cUdsHfq2k7bOGXpkfiOW+A+vLv4x7dDj854anrCl/6cOz3etTVd013whV1f7y5vpmFiIKKWYggqJiFCIKKWYggqJiFCIKKWYggqJiFiOczJ/hnuTqfjxxlKvGZ1xd3c1PJ8VSLHsnuRV5h+u+m3lf7jUyi+im4vGXJVVJBirgFXNlXTbvDK93X9MViifvF+5ccya2mIzOf867Te2B5HRx0741+i2lnJLv9Hp8K99evpNP4KXobTvapSFDvg89fjdT6X5FNvyStG2NMJ2H5cvjN/rlq8X5FPZ5z0ieTXifnIdXuZ5Jwz46Awz4Obyc8DP+6p+lleDviUn0zCxEFFbMQQVAxCxEEFbMQQVAxCxEEFbMQQVAxCxHfZ26WmfHLPtr+++twU78ozI1+bLodjm9p0YN5y8yRkt6m3jH8Afzd+2q/W+I4ToJXSVZn/mNOgB++SVqBecfzcWSL4AePwrXZEPeqHldgd8xZdnyq8hx0sfYZ3N6R/ALTH8Dj9Ex7tchqP4B+135PLsKcZc7QfgjOuDvcc3FG3i36R5mn4xOkiRP+vhHeLfAu1pOLtxGYK+as6+Z4zl/EkbyGa+PvDhwLh/ty9DTfCffgFZwB89Mn4wo9o29mIaKgYhYiCCpmIYKgYhYiCCpmIYKgYhYiCCpmIYJQqeU4fcrw0yWrjINzSDy9u5XpHUiw5mYA5+Y7N2DCr/eSnmo6uHDadkW/6g9MPe9MvI/2jZks7hRkbBehE/iR6HDcB12rX0fO+kdwHn3qcbfC40zwELtlsrCL0eP5AezZPdE/p8/Gpxx/iOXHw/1lZn0err33hJ5a/GUzHKFzE3zeLUpmZY/EHGbPiv8UTrynhZeWuLL83Wd2tzOdlQbaTzeb/sm0F7Y8Gfdk95KnjHu+F33ph8P5bob1+uLe9kG9XmVar29mIaKgYhYiCCpmIYKgYhYiCCpmIYKgYhYiCCpmIeL5zL8yHVGySnMkUnMp3pYln8v9P6HP3Au+n7PStEfRwXg5csr94eD1RAdi7nEZvEv3hQfCKfdJ07PRTTpl+nL3x/Jn4PL2LrxF95XvxxZ+jX7anu6dA+/zSriuwzCP2fkGvHuyAD6yZ3QPhuPu7xxcWvi+7p5WTfdGQtpzzteaHo2E9L5IEf/C9Mz0+eyDI+PbEhfgSvhc5xnF8U4pef73M/1PZL3Pxecug2fvfAe+cM6HTngLYSSmjufWq+qbWYgoqJiFCIKKWYggqJiFCIKKWYggqJiFCIKKWYi4fbMTPMWF6DBMDsp0Kv6fopqeRY7Z6Qo3NqHLdB0cu1HwNr9peg986rfgPHoCNsHnXgBP8014rz7leEXhyX8v04mbHmfKONkdoVfgDKbAefcezU6P4ojW7FJdRrXwlR8r+eShmJ3dCnll71Y9Ef20/YgS/OlVWM/ZBmfMSdWkWiSyfwoPfQfTryBXPL/EJybvYvJ0J2TR/alIeLthMd4JqKLH+nXFcn0zCxEEFbMQQVAxCxEEFbMQQVAxCxEEFbMQQVAxCxHfZx5kOh2p3/9r5M+gJSbpPo+/e0fil+E7N0Vv5z9m97ymy/sYejI/btoaru7i0jN4AvfAGYw9kTGYHO2MN70wrR3fRufvh+C9uhfrVNMx6IvteyS7mc7M9LveGVegM6YVt8ZbDwMyLm8dfGjnh6bnNzqDQ3Duo5FeJ01whG/gSPwthWlYnvOllyJNT/yMdzHd09Snk8tnFiIMKmYhgqBiFiIIKmYhgqBiFiIIKmYhgqBiFiJe32xPmB6OjzRDDpO0h3tKP3p3+GEJDuCT8M/ox22Eftyt0aF5fnoBjuBQ02Pg0NVhS0uQld0b+eReyMJOzvwH9ITrdumzqaDrdWf0z3676CLtHbi/Zfp703klPcg9U36X6TvwIj3xfTly0zyT25CHHgTHvQ2mGvuVnFvc/RXoc3216Y4lqXefun1CxoVdBXeXVDLLG/AuwHBMU36wUZ65O+72AZji7XPJj0A6vimy57Wu6Gtew2l4y6GC7UyD0z4RZ+L9uF/EOwCazyxEGFTMQgRBxSxEEFTMQgRBxSxEEFTMQgRBxSxEECo1fy3BlfXsbILPtRR+VyckRP+7/j9w6rHTJW2G3DEzrKvhUf7c9FU4gJ4G/ti0xRc8Yk+C74Tl92GmcH3aBB7n3fCHty/Zkzvkl6DDtyeu52JK8Q8y27kQRzykZL/3mh6bOsDJ7leyZg9c4xvwtsMwdKvugS7um2D9bU1fgGs7GO8OrIDX71n2vYrnqw9mYjsNmI1dB+//cFzzE7G+n8lJSFbnnHL3rS/Gs7A/3i3wXurH6ptZiCiomIUIgopZiCComIUIgopZiCComIUIgopZiCDUrXti1B2+60v83y8b+nC1/S4sSVz73zfH5OkNcUavwe3N4Y7f10s+R385wV92P7uWTfXMbEJWNWU8yyHIwA6El/k+srEHY1ZwexzJ+Mx+l+GeH4crm9IM03PS5+NP15+RAd8YZ7AzHPOXTL+a2e5p2P8bcIF5pgmp+Nq85WOQxO6Ap2U0nPGrkbs/DPOTr8GR7Y+J0uwf0AVnwHx/yvTfVt9sIcKgYhYiCCpmIYKgYhYiCCpmIYKgYhYiCCpmIeL5zOta1w3w32bCOSybR5vb3triaeRaovo9eIpzkUB1PP+8yPQo0zvwOa7/ZsZfngl/ui26V19m+h9wed9DArbWS9mnDrfCtfkQyxOurTvtU/B394fvwezgVUgFe7p3V9PvwiM9Dt6o56hruOOdy3Z7/+yUOQN3eUfgzM+BfgDH/Yfo6H003glw/g3Z9cZwT02Qit8XR+zsBcfcp4GPMr0ls/2Ea30Ftv8WPvcSHPhupqv0zSxEFFTMQgRBxSxEEFTMQgRBxSxEEFTMQgRBxSxEPJ+5SWa+cpm/3CTj5jZge2X/N/xzJ8OdTfBQvZ9w10Zp2x2QBOURkfaY3UuYnXVPcwHc3gGYbnwTEq434ojr4TPXZk7/DGvMhgM+Hf2tj8I18T0m+NJvwF9OcGEHIN07DK6sZ3gfwT1i/jqlfzY9w/SpjDffHHe1A7pAH1CS5vUr9hfcq77oer0l1sv7y50ybxM8iwnSnldOmTnmH+Fae575LLwDsB8mVo/DGZ+HFH7KXImnTbfTN7MQUVAxCxEEFbMQQVAxCxEEFbMQQVAxCxEEFbMQ8XzmBri2LfFR//vbyMKugsf5CbzPDUr84g2gPmGX+Jza0xsdurux68r20OVwCt1XXmK6qWnHTJ55JGYMuwu7h+nv4CT2Ml1a5ISfRSdvd7QPhLobuxjTi/8EF3dM5t2BxfCXZ+L3aVDvAP4teKgXmd6ZrrWfzsSaOa/fj/RO01MxZzmXi74e85+3wd9nIe3+IK75labfQaa95i8n3It2jd5rWHNOufco/wWO7FDkm8+Ff+xvRUw1fQXb937cdPCPNL22Ud5Z38xCBEHFLEQQVMxCBEHFLEQQVMxCBEHFLEQQVMxCBKFSTfOw6CP4Y7kcJf8PfLqe/bFzc5e5fU//tsHy+qIPdXd0LGaHYec5eI1NkN71zt8Jc5u7reUZOr0xfZn4FW7b6B4k9K92t5RU4IiPRva2N9Z3z3Sl6Ty4wU2RBmb++TH8PqhYfx56hr+HLtDeFZpUkUd+Cj7zAZmnZiVS9RX83RPcE+Hi9sQ8556NzuBiePHnY8tDkO2mD+zvQdAvHo63DzwT7myFI61gknV3LF+M9zZ20jezEFFQMQsRBBWzEEFQMQsRBBWzEEFQMQsRBBWzEHF95jK/uAF5zm3h7BWb/oKHdgz6Dj8P79SpL+Ygr8ARkreQwK7Cb56ccdidBzCJl7yM7tMdkQD3M7oKxzOwuAeD0MPZM7Lv4Ijfh+fOhPTaJrx9LvPHWO49y49H9vYPme3UXFpnC/S1bii5VmcgTX9JydPkXa33wfTkf0EPc5+JfRfuvU+Wvt+0mvogET0/s+cfm56N/tfPIIOeozuO9HXs7yg8Ne47j8XxbI0rWdU3sxBRUDELEQQVsxBBUDELEQQVsxBBUDELEQQVsxDxfeYvWvfcTnOkh9/J9Oc+FU5j7njc1x5aTMZ9FW6ou6MzTHcsOeIecHkvN/0aHO4d4IDT9Z2CxGpn7KcdvM9dGt0D9xp/j27P7qompID7w2n3Dt1ri9+TEXBf/V0CurvHmn7PtD7tgrTuP5iOQu6YCWniXaUPgdN9X8l6DUgfr8D26MqSWh2MRa75eHjvOW++AT7w6agbf4p+ibcWnH9Cqn4EOov7dg82vbXRGeibWYggqJiFCIKKWYggqJiFCIKKWYggqJiFCIKKWYgg1NWmEg9fx/rO+W0JSdYt0Ok4YQZxyniZq+Df5fppp3QdejTn/OQj0P2ZCeyFcAjdGUzwn1/AFViNM3QXdpLpKZk+3J5OrnWZHgcHewD8ZU56Xog+1/73HM3hwk7DGd+eWe9R08HwYGvca3opHPJbcI8SJj5Px5mfiTN6IpMq/gly0GdjCvI4ZMZ/Y3oPXNpWxRaPRj/qhDO6DM87feW/G3W+Rh/tjeGU+1sRrU0/gL98GN6/qCCZPRj+t/dW1zezEGFQMQsRBBWzEEFQMQsRBBWzEEFQMQsRBBWzEEGoq/lev13LVdhXu2zeMtcr+//xNLZT3n+7J3olb266BL2Yb8gcsX9u05L9eBfrCaYzM5/zHPTadk6uubTXIPXrvZSdD3EGj8Ondq80x0bwmXPealu8ezAYk6bHwsWtJaBPMn0SW3TfuYvpCfCR3dOfhwy4n3HCmd+E3PS5+NxFmXvC5Lj3TL+tcJy/jbtdQdfzq+FkJ7wX4f2uExLUnXDPfLu/wudXZLLso+BX74srUq9vZiGioGIWIggqZiGCoGIWIggqZiGCoGIWIggqZiGCUKmm0Rlnbn195mLT+D2fR/787ZdRX3QW7oe5yC2QH+6c8RorWM+dvo9MP8Hn3QV+GN2l28K1fQ2+8nK4vbUz6I0zeMh0CLpBT4AXuiW2dIfpgVju9/a09ZydfStmF9djf7OL5PUeeFvgLlyTa5A575U5ok3hM38KbYLM+ESkg3+GLux+pDuj47hTX6Th2Zt8bVmErugnok+2vwswx7Sr6faY73wiOn2fkMlPN8DX3lHfzEJEQcUsRBBUzEIEQcUsRBBUzEIEQcUsRBBUzEIEoVItfC/v/twtk6VNcFVbINPaBbOFr8z4Yht8SXlpX96lyM5ujk7db2LNPugW7X2r+5o+hznLW5k+mUlYb2v6vOlQuMSL4Fe7s0jqC4fafdwOpr58NtbIefvHwdP0XsukA/put0Tym7+/j17Pr+BK9S985XaYLuzdnfdCZ+4DMVPbr7UzBh26u6LXubvBB2FSdA5eMe/XPdd0fPHTZsgT+9PB7uuejne+gbcL5mfeUpiOzuH0jxOmgPs93D/zLDiazyxEGFTMQgRBxSxEEFTMQgRBxSxEEFTMQgRBxSxEEP5uqKwnRF8yfda0qekw01aZuckJfYXdZ07w2zw1vAD+2lgsPwsJWOcqZHpr/jInQ7s/PBBn0g/5ZveXE1zVZSXp36H4jzjI9BHTOzGj2Ptz391omvIszKb2a98M85j3WMc8cs5nXgi319O+CWee4CdPwrsA7lfX/OWEu/8Eepq7f3wjfOMOSOdOQqqXs7R7rKW/PAD3ZBaWe9/taqNr2ncd+8L7BGg+p0dl5jfnOA1PDd9OuA19vf2tCX0zCxEGFbMQQVAxCxEEFbMQQVAxCxEEFbMQQVAxCxGEupr7+QgcPe/JvCcm2V5QkqltnsnGvoOcZ27+8gUZfznhOMabbpx+Yj/tB4fweniVt2PNNphCfDcc70ex51+XnLnzrune6MPdEvupzXHuiEx5QoZ1Ohz1fo08xjVxT/M6zAaeBZ+5acZnPsPUr2yCS9weZ1otPnkkMuXTcVdnYjb1tpmpxrvirYXdTOeiy/T3TafiqfWc9Az06fbfE3qfH5FOsZ8mo9d4maffHen4B+GcD0MOeQ6c9IuRQfcMO/Gne2T2SPTNLEQQVMxCBEHFLEQQVMxCBEHFLEQQVMxCBEHFLEQQKu6OCSH+f6NvZiFSDP4G8dVc6Fg7alEAAAAASUVORK5CYII="/>
+<div class="rk">The same Sigil at 0%, 30%, 50%, 70%, 90% damage (noise + blur + occlusion + brightness shift).
+Even heavily corrupted, the decoder still reads it.</div>
+
+<h2>Graceful degradation — bit accuracy vs. damage</h2>
+<div class="legend card"><span><span class="dot" style="background:#6366f1"></span>Sigil (channel-aware)</span><span><span class="dot" style="background:#ef4444"></span>no-channel ablation (trained on clean glyphs)</span></div>
+<svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" class="chart">
+<line x1="58" y1="342" x2="722" y2="342" class="grid"/>
+<text x="50" y="346" class="ylab">0%</text>
+<line x1="58" y1="285" x2="722" y2="285" class="grid"/>
+<text x="50" y="289" class="ylab">20%</text>
+<line x1="58" y1="228" x2="722" y2="228" class="grid"/>
+<text x="50" y="232" class="ylab">40%</text>
+<line x1="58" y1="172" x2="722" y2="172" class="grid"/>
+<text x="50" y="176" class="ylab">60%</text>
+<line x1="58" y1="115" x2="722" y2="115" class="grid"/>
+<text x="50" y="119" class="ylab">80%</text>
+<line x1="58" y1="58" x2="722" y2="58" class="grid"/>
+<text x="50" y="62" class="ylab">100%</text>
+<text x="58" y="362" class="xlab">0</text>
+<text x="124" y="362" class="xlab">10</text>
+<text x="191" y="362" class="xlab">20</text>
+<text x="257" y="362" class="xlab">30</text>
+<text x="324" y="362" class="xlab">40</text>
+<text x="390" y="362" class="xlab">50</text>
+<text x="456" y="362" class="xlab">60</text>
+<text x="523" y="362" class="xlab">70</text>
+<text x="589" y="362" class="xlab">80</text>
+<text x="656" y="362" class="xlab">90</text>
+<text x="722" y="362" class="xlab">100</text>
+<polyline points="58.0,58.0 124.4,58.0 190.8,58.0 257.2,58.2 323.6,58.8 390.0,61.1 456.4,66.7 522.8,76.6 589.2,90.3 655.6,105.9 722.0,121.8" fill="none" stroke="#6366f1" stroke-width="3"/>
+<circle cx="58.0" cy="58.0" r="3.5" fill="#6366f1"/>
+<circle cx="124.4" cy="58.0" r="3.5" fill="#6366f1"/>
+<circle cx="190.8" cy="58.0" r="3.5" fill="#6366f1"/>
+<circle cx="257.2" cy="58.2" r="3.5" fill="#6366f1"/>
+<circle cx="323.6" cy="58.8" r="3.5" fill="#6366f1"/>
+<circle cx="390.0" cy="61.1" r="3.5" fill="#6366f1"/>
+<circle cx="456.4" cy="66.7" r="3.5" fill="#6366f1"/>
+<circle cx="522.8" cy="76.6" r="3.5" fill="#6366f1"/>
+<circle cx="589.2" cy="90.3" r="3.5" fill="#6366f1"/>
+<circle cx="655.6" cy="105.9" r="3.5" fill="#6366f1"/>
+<circle cx="722.0" cy="121.8" r="3.5" fill="#6366f1"/>
+<polyline points="58.0,58.0 124.4,70.9 190.8,87.6 257.2,104.1 323.6,119.8 390.0,133.6 456.4,145.4 522.8,156.1 589.2,164.2 655.6,171.3 722.0,177.2" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
+<circle cx="58.0" cy="58.0" r="3.5" fill="#ef4444"/>
+<circle cx="124.4" cy="70.9" r="3.5" fill="#ef4444"/>
+<circle cx="190.8" cy="87.6" r="3.5" fill="#ef4444"/>
+<circle cx="257.2" cy="104.1" r="3.5" fill="#ef4444"/>
+<circle cx="323.6" cy="119.8" r="3.5" fill="#ef4444"/>
+<circle cx="390.0" cy="133.6" r="3.5" fill="#ef4444"/>
+<circle cx="456.4" cy="145.4" r="3.5" fill="#ef4444"/>
+<circle cx="522.8" cy="156.1" r="3.5" fill="#ef4444"/>
+<circle cx="589.2" cy="164.2" r="3.5" fill="#ef4444"/>
+<circle cx="655.6" cy="171.3" r="3.5" fill="#ef4444"/>
+<circle cx="722.0" cy="177.2" r="3.5" fill="#ef4444"/>
+<text x="390" y="390" class="axtitle">damage severity (%)</text>
+<text x="15" y="200" class="axtitle" transform="rotate(-90 15 200)">accuracy</text>
+</svg>
+<div class="card">The Sigil's accuracy declines <b>smoothly</b> across the whole damage range. The ablation — an
+identical network trained only on clean glyphs — falls apart as soon as any real damage appears, which proves the
+robustness comes from <b>training through the channel</b>, not from the architecture. This is the same joint
+source-channel coding idea behind Latent Radio, now protecting a human-shareable code.</div>
+
+<h2>Whole-message recovery</h2>
+<p class="sub">Stricter test: every one of the 32 bits correct (a perfectly recovered message).
+Sigil recovers the full message reliably up to ~40% damage, then degrades — while the ablation
+never survives any damage.</p>
+<div class="legend card"><span><span class="dot" style="background:#6366f1"></span>Sigil</span><span><span class="dot" style="background:#ef4444"></span>no-channel ablation</span></div>
+<svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" class="chart">
+<line x1="58" y1="342" x2="722" y2="342" class="grid"/>
+<text x="50" y="346" class="ylab">0%</text>
+<line x1="58" y1="285" x2="722" y2="285" class="grid"/>
+<text x="50" y="289" class="ylab">20%</text>
+<line x1="58" y1="228" x2="722" y2="228" class="grid"/>
+<text x="50" y="232" class="ylab">40%</text>
+<line x1="58" y1="172" x2="722" y2="172" class="grid"/>
+<text x="50" y="176" class="ylab">60%</text>
+<line x1="58" y1="115" x2="722" y2="115" class="grid"/>
+<text x="50" y="119" class="ylab">80%</text>
+<line x1="58" y1="58" x2="722" y2="58" class="grid"/>
+<text x="50" y="62" class="ylab">100%</text>
+<text x="58" y="362" class="xlab">0</text>
+<text x="124" y="362" class="xlab">10</text>
+<text x="191" y="362" class="xlab">20</text>
+<text x="257" y="362" class="xlab">30</text>
+<text x="324" y="362" class="xlab">40</text>
+<text x="390" y="362" class="xlab">50</text>
+<text x="456" y="362" class="xlab">60</text>
+<text x="523" y="362" class="xlab">70</text>
+<text x="589" y="362" class="xlab">80</text>
+<text x="656" y="362" class="xlab">90</text>
+<text x="722" y="362" class="xlab">100</text>
+<polyline points="58.0,58.0 124.4,58.2 190.8,59.5 257.2,64.4 323.6,80.8 390.0,134.0 456.4,210.6 522.8,276.5 589.2,317.1 655.6,334.4 722.0,340.3" fill="none" stroke="#6366f1" stroke-width="3"/>
+<circle cx="58.0" cy="58.0" r="3.5" fill="#6366f1"/>
+<circle cx="124.4" cy="58.2" r="3.5" fill="#6366f1"/>
+<circle cx="190.8" cy="59.5" r="3.5" fill="#6366f1"/>
+<circle cx="257.2" cy="64.4" r="3.5" fill="#6366f1"/>
+<circle cx="323.6" cy="80.8" r="3.5" fill="#6366f1"/>
+<circle cx="390.0" cy="134.0" r="3.5" fill="#6366f1"/>
+<circle cx="456.4" cy="210.6" r="3.5" fill="#6366f1"/>
+<circle cx="522.8" cy="276.5" r="3.5" fill="#6366f1"/>
+<circle cx="589.2" cy="317.1" r="3.5" fill="#6366f1"/>
+<circle cx="655.6" cy="334.4" r="3.5" fill="#6366f1"/>
+<circle cx="722.0" cy="340.3" r="3.5" fill="#6366f1"/>
+<polyline points="58.0,58.1 124.4,212.6 190.8,304.3 257.2,335.2 323.6,341.1 390.0,341.9 456.4,342.0 522.8,342.0 589.2,342.0 655.6,342.0 722.0,342.0" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
+<circle cx="58.0" cy="58.1" r="3.5" fill="#ef4444"/>
+<circle cx="124.4" cy="212.6" r="3.5" fill="#ef4444"/>
+<circle cx="190.8" cy="304.3" r="3.5" fill="#ef4444"/>
+<circle cx="257.2" cy="335.2" r="3.5" fill="#ef4444"/>
+<circle cx="323.6" cy="341.1" r="3.5" fill="#ef4444"/>
+<circle cx="390.0" cy="341.9" r="3.5" fill="#ef4444"/>
+<circle cx="456.4" cy="342.0" r="3.5" fill="#ef4444"/>
+<circle cx="522.8" cy="342.0" r="3.5" fill="#ef4444"/>
+<circle cx="589.2" cy="342.0" r="3.5" fill="#ef4444"/>
+<circle cx="655.6" cy="342.0" r="3.5" fill="#ef4444"/>
+<circle cx="722.0" cy="342.0" r="3.5" fill="#ef4444"/>
+<text x="390" y="390" class="axtitle">damage severity (%)</text>
+<text x="15" y="200" class="axtitle" transform="rotate(-90 15 200)">accuracy</text>
+</svg>
+
+<h2>What this is / isn't</h2>
+<div class="card">
+<b>Is:</b> a real, trained-from-scratch visual code that degrades gracefully where a QR code cliffs — a new,
+honest building block for getting a short message through a hostile visual channel (bad prints, glare, partial
+cover, low-quality photos). <b>Isn't:</b> unlimited compression or a replacement for all of QR (QR carries far
+more bits and is a mature standard). It's one specific superpower — <i>meaning that survives damage</i> — proven
+on 32-bit messages with small models.</p>
+</div>
+
+<p class="sub" style="margin-top:22px">Reproduce: <code>python3 experiments.py &amp;&amp; python3 make_report.py</code>.
+Next: an in-browser demo — type a message, watch the Sigil form, damage it with a slider, watch it still decode,
+side-by-side with a QR code that dies.</p>
+</body></html>

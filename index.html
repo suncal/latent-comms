@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Latent Comms — Learned Communication for Contested &amp; Deep-Space Channels</title>
+<meta name="description" content="An independent research program on neural joint source-channel coding: links that degrade gracefully and keep delivering where classical communication falls off a cliff. Simulation-validated proof-of-concept, with honest evidence and open code.">
+<style>
+  :root{
+    --bg:#080b12; --bg2:#0d111b; --panel:#111827; --line:#1e2636; --ink:#e8edf6;
+    --mut:#9aa6bd; --accent:#7c9cff; --accent2:#22d3ee; --warn:#f59e0b; --good:#34d399; --bad:#ef4444;
+  }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  /* hero */
+  header{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 500px at 70% -10%, #16223f 0%, transparent 60%), var(--bg)}
+  .stars{position:absolute;inset:0;background-image:
+     radial-gradient(1px 1px at 20% 30%, #fff6 0, transparent 50%),
+     radial-gradient(1px 1px at 60% 70%, #fff4 0, transparent 50%),
+     radial-gradient(1px 1px at 80% 20%, #fff5 0, transparent 50%),
+     radial-gradient(1px 1px at 35% 80%, #fff3 0, transparent 50%),
+     radial-gradient(1px 1px at 90% 55%, #fff4 0, transparent 50%);opacity:.6}
+  .hero{position:relative;padding:64px 0 52px}
+  .badge{display:inline-flex;gap:8px;align-items:center;font-size:12.5px;font-weight:600;color:var(--accent2);
+    border:1px solid #164e63;background:#0a1a20;border-radius:999px;padding:5px 12px;margin-bottom:20px}
+  .dotlive{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good)}
+  h1{font-size:clamp(30px,5vw,50px);line-height:1.08;margin:0 0 14px;letter-spacing:-.02em;font-weight:800}
+  h1 .g{background:linear-gradient(90deg,#7c9cff,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:clamp(17px,2.3vw,21px);color:#c6cfe0;max-width:66ch;margin:0 0 26px}
+  .cta{display:flex;flex-wrap:wrap;gap:12px}
+  .btn{display:inline-block;padding:12px 20px;border-radius:10px;font-weight:600;font-size:15px}
+  .btn.p{background:linear-gradient(90deg,#5b7cff,#22d3ee);color:#04121c}
+  .btn.s{border:1px solid var(--line);color:var(--ink);background:#0c1220}
+  .honest{margin-top:22px;font-size:13.5px;color:var(--mut)}
+
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--mut);max-width:74ch;margin:0 0 26px}
+  .kicker{font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:8px}
+
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{margin:0 0 6px;font-size:17px}
+  .stat{font-size:30px;font-weight:800;background:linear-gradient(90deg,#7c9cff,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .card p{color:var(--mut);font-size:14.5px;margin:6px 0 0}
+  .tag{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:6px;margin-top:10px}
+  .tag.win{color:#34d399;background:#0c2118;border:1px solid #14532d}
+  .tag.lim{color:#f59e0b;background:#211a0a;border:1px solid #713f12}
+
+  .flow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:8px 0 4px}
+  .node{background:#0c1424;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px}
+  .arrow{color:var(--accent);font-size:20px}
+
+  .proj{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;transition:border-color .15s}
+  .proj:hover{border-color:#33456b}
+  .proj .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .proj h3{margin:0;font-size:16px} .proj .n{font-size:12px;color:var(--mut);font-family:ui-monospace,monospace}
+  .proj p{color:var(--mut);font-size:13.5px;margin:2px 0 6px}
+  .proj .links a{font-size:13px;margin-right:14px}
+
+  .limits{background:#150f06;border:1px solid #6b4310}
+  .limits h2{color:#f7b955} ul{margin:8px 0 0;padding-left:20px} li{color:#d8c7a6;margin:6px 0}
+  .limits li b{color:#ffe1b0}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--mut);font-weight:600} td.n{font-family:ui-monospace,monospace}
+  .w{color:var(--good)} .l{color:var(--warn)}
+
+  footer{padding:40px 0 60px;color:var(--mut);font-size:13px}
+  .disc{background:#0d111b;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:20px;color:#aab6cc;font-size:13px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="stars"></div>
+  <div class="wrap hero">
+    <div class="badge"><span class="dotlive"></span> Independent research · simulation-validated · seeking evaluation partners</div>
+    <h1>Communication that <span class="g">bends instead of breaking</span>.</h1>
+    <p class="lede">A research program on <b>neural joint source-channel coding</b> — radio links where the transmitter
+      and receiver share a learned model, so the signal <b>degrades gracefully and keeps delivering</b> in exactly the
+      conditions that make classical links fail completely: deep-space low-SNR, fading, and jamming.</p>
+    <div class="cta">
+      <a class="btn p" href="https://suncal.github.io/latent-radio/" target="_blank" rel="noopener">▶ Try the live demo</a>
+      <a class="btn s" href="#evidence">See the evidence</a>
+      <a class="btn s" href="#research">All research &amp; code</a>
+    </div>
+    <p class="honest">Honest by design: this page leads with what the technology <b>does</b> and does not do. Every
+      number below is measured in our own simulations, reproducible from the open code.</p>
+  </div>
+</header>
+
+<section id="idea">
+  <div class="wrap">
+    <div class="kicker">The core idea</div>
+    <h2>Classical radio works perfectly — until it doesn't.</h2>
+    <p class="sub">Today's systems <b>separate</b> the job: compress the data to bits, then wrap those bits in
+      error-correction. Claude Shannon proved that's optimal for infinitely long messages — but it has a hard edge.
+      Above a channel-quality threshold you get a perfect signal; a hair below it, the code fails and you get
+      <b>nothing</b>. That "cliff" is worst exactly where it matters most: at the edge of deep space, through fading,
+      under a jammer.</p>
+    <div class="flow">
+      <span class="node">Image / data</span><span class="arrow">→</span>
+      <span class="node">Neural encoder<br><span style="color:var(--mut);font-size:12px">(the shared model)</span></span><span class="arrow">→</span>
+      <span class="node" style="border-color:#3a2a12;color:#f7b955">Noisy / jammed<br>channel</span><span class="arrow">→</span>
+      <span class="node">Neural decoder<br><span style="color:var(--mut);font-size:12px">(same shared model)</span></span><span class="arrow">→</span>
+      <span class="node">Reconstruction</span>
+    </div>
+    <p class="sub" style="margin-top:14px">When both ends share a jointly-trained model, they transmit <i>meaning</i>
+      rather than fragile bits. The result has no cliff: as the channel worsens the reconstruction just gets softer,
+      and <b>every frame still arrives usable</b>. That is the whole thesis — and the sections below show where it
+      holds up and where it doesn't.</p>
+  </div>
+</section>
+
+<section id="evidence">
+  <div class="wrap">
+    <div class="kicker">The evidence — measured, reproducible</div>
+    <h2>What it demonstrably does</h2>
+    <p class="sub">Three headline results from the studies below. Trained from scratch, tested on standard channel
+      models and real Sentinel-2 satellite imagery, compared against a deliberately strong classical baseline.</p>
+    <div class="grid g3">
+      <div class="card">
+        <div class="stat">+8.8 dB</div>
+        <h3>Works with no feedback</h3>
+        <p>On a one-way link (deep-space, broadcast, jammed) digital must fix its rate and delivers <b>0% of frames</b>
+          below its design point. The neural link needs <b>zero transmitter channel knowledge</b> and still delivers a
+          usable image — +8.8 dB at 0 dB SNR.</p>
+        <span class="tag win">verified · Sentinel-2</span>
+      </div>
+      <div class="card">
+        <div class="stat">0% outage</div>
+        <h3>Every frame arrives</h3>
+        <p>Under Rayleigh fading + barrage jamming, the classical baseline loses ~19% of frames entirely; the learned
+          link delivers <b>100%</b> at consistent quality, and a hybrid design stays within ~1.3 dB of the best
+          classical system across the whole SNR range without ever cliffing.</p>
+        <span class="tag win">verified · hybrid</span>
+      </div>
+      <div class="card">
+        <div class="stat">+3.0 dB</div>
+        <h3>Jamming-hardened</h3>
+        <p>A reactive follower-jammer cuts an unhardened link by 6.3 dB; adversarial training recovers 3.0 dB and the
+          robustness transfers to the worst-case jammer, for &lt;1 dB clean-channel cost.</p>
+        <span class="tag win">verified · adversarial</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Straight talk</div>
+    <h2>Where it fits — and where it doesn't</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3 style="color:var(--good)">Strong fit</h3>
+        <table>
+          <tr><th>Regime</th><th>Why</th></tr>
+          <tr><td>Deep-space / low SNR</td><td class="w">graceful, no cliff, no outage</td></tr>
+          <tr><td>Contested / jammed (EW)</td><td class="w">hardens against reactive jammers</td></tr>
+          <tr><td>Fading, no retransmit</td><td class="w">delivers every frame usably</td></tr>
+          <tr><td>Bandwidth-starved links</td><td class="w">~12× source compression built in</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--warn)">Poor / unproven fit</h3>
+        <table>
+          <tr><th>Regime</th><th>Why</th></tr>
+          <tr><td>High-SNR / clean links</td><td class="l">rate-adaptive digital wins — hand off</td></tr>
+          <tr><td>Exact / lossless data</td><td class="l">neural decoders can hallucinate</td></tr>
+          <tr><td>Deployed RF hardware</td><td class="l">not yet tested — simulation only</td></tr>
+          <tr><td>Interoperability</td><td class="l">both ends need the same model</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="limits">
+  <div class="wrap">
+    <div class="kicker" style="color:#f7b955">Honest limitations — read this first</div>
+    <h2>What this is not (yet)</h2>
+    <ul>
+      <li><b>Not a universal replacement.</b> It wins in the hard regime and <b>loses in good channels</b>. The right
+        system switches to classical coding when the link is clean.</li>
+      <li><b>Simulation-stage (TRL ~2–3).</b> Results are from software channel models (Rayleigh/Rician fading,
+        partial-band + adversarial jamming, AWGN). No RF front-end, Doppler, carrier/timing recovery, or hardware
+        nonlinearity yet. Perfect receiver channel-state information is assumed.</li>
+      <li><b>The digital baseline is information-theoretic</b> (capacity-achieving with outage), not a specific fielded
+        codec — a fair but idealized opponent.</li>
+      <li><b>Hallucination risk.</b> A neural decoder can invent plausible detail. For science or targeting data you
+        would transmit verifiable residuals, not trust the reconstruction blindly.</li>
+      <li><b>Scale.</b> Trained on small imagery on a single machine. The physics and failure modes are real; the
+        scale is a proof-of-concept.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="research">
+  <div class="wrap">
+    <div class="kicker">The full record — nothing hidden</div>
+    <h2>All research &amp; code</h2>
+    <p class="sub">Seven studies, each with a full report and open source. They include the failures: an architecture
+      that partly worked, and an adaptivity idea that <i>didn't</i>. That's the point — this is a real research trail,
+      not a brochure.</p>
+    <div class="grid g2">
+
+      <a class="proj" href="projects/latent-radio.html">
+        <div class="top"><h3>Latent Radio</h3><span class="n">flagship · LIVE</span></div>
+        <p>The core demo: a neural transceiver that beats classical coding across every SNR and degrades gracefully.
+          Interactive — pick or draw an image and dial the noise.</p>
+        <div class="links"><span style="color:var(--accent2)">Report →</span>
+          <a href="https://suncal.github.io/latent-radio/" target="_blank" rel="noopener">Live demo →</a></div>
+      </a>
+
+      <a class="proj" href="projects/improvements.html">
+        <div class="top"><h3>Making it better — hybrid + moat</h3><span class="n">latest · dominance</span></div>
+        <p>Two builds: a hybrid digital-analog code that recovers ~half the good-channel gap without ever cliffing,
+          and the feedback-free moat — usable data on one-way links where digital delivers nothing.</p>
+        <div class="links"><span style="color:var(--accent2)">Report →</span></div>
+      </a>
+
+      <a class="proj" href="projects/contested-v2.html">
+        <div class="top"><h3>Contested Channel v2</h3><span class="n">satellite · rigorous</span></div>
+        <p>Comms-grade re-test on real Sentinel-2 imagery: Rayleigh/Rician fading, partial-band jammer, honest
+          outage-based baseline. Wins in the hard regime; delivers every frame.</p>
+        <div class="links"><span style="color:var(--accent2)">Report →</span></div>
+      </a>
+
+      <a class="proj" href="projects/contested-v3.html">
+        <div class="top"><h3>Contested Channel v3</h3><span class="n">jamming · honest mixed</span></div>
+        <p>Reactive/adversarial jamming + adversarial-training defense (worked); SNR-rate-adaptivity (didn't close the
+          gap — reported straight).</p>
+        <div class="links"><span style="color:var(--accent2)">Report →</span></div>
+      </a>
+
+      <a class="proj" href="projects/sigil.html">
+        <div class="top"><h3>Sigil</h3><span class="n">visual code</span></div>
+        <p>A message code that fades instead of breaking — the same principle applied to a QR-like visual channel.
+          93% bit-recovery at 70% damage.</p>
+        <div class="links"><span style="color:var(--accent2)">Report →</span></div>
+      </a>
+
+      <a class="proj" href="projects/aether.html">
+        <div class="top"><h3>Aether</h3><span class="n">emergent language</span></div>
+        <p>Two agents invent a private, compressed, noise-robust language to cooperate — cooperation on ~8 numbers per
+          message instead of verbose text.</p>
+        <div class="links"><span style="color:var(--accent2)">Report →</span></div>
+      </a>
+
+      <a class="proj" href="projects/contested-v1.html">
+        <div class="top"><h3>Contested Channel v1</h3><span class="n">first stress test</span></div>
+        <p>The initial space/defense framing: shared-model transceiver under burst jamming and fades. Motivated the
+          rigorous v2 re-test.</p>
+        <div class="links"><span style="color:var(--accent2)">Report →</span></div>
+      </a>
+
+      <a class="proj" href="projects/hrm.html">
+        <div class="top"><h3>HRM — Harmonic Resonance Mixer</h3><span class="n">architecture</span></div>
+        <p>A from-scratch novel sequence architecture (resonant memory + selective gate). Beats a GRU on noisy
+          frequency-ID; loses on delayed recall — ablation-validated.</p>
+        <div class="links"><span style="color:var(--accent2)">Report →</span></div>
+      </a>
+
+      <div class="proj" style="justify-content:center;align-items:center;text-align:center">
+        <h3 style="margin:0">Open source</h3>
+        <p>All code, reproducible from scratch.</p>
+        <div class="links"><a href="https://github.com/suncal/latent-comms" target="_blank" rel="noopener">github.com/suncal/latent-comms →</a></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="partners">
+  <div class="wrap">
+    <div class="kicker">For evaluators &amp; partners</div>
+    <h2>What would make this real</h2>
+    <p class="sub">This is a proof-of-concept with a genuine, narrow advantage and honest gaps. The next steps need
+      resources a laptop can't provide — and that's exactly the conversation we're looking for.</p>
+    <div class="grid g3">
+      <div class="card"><h3>1 · Independent evaluation</h3><p>Re-run the studies against your own channel models,
+        datasets, and classical baselines. Everything is open and reproducible.</p></div>
+      <div class="card"><h3>2 · Hardware-in-the-loop</h3><p>Take it from simulation to an SDR / RF testbed — real
+        Doppler, timing recovery, and front-end nonlinearity — to measure true TRL.</p></div>
+      <div class="card"><h3>3 · Mission-relevant data</h3><p>Train and test on representative payloads (hyperspectral,
+        SAR, telemetry) and real link budgets for a target mission profile.</p></div>
+    </div>
+    <div class="card" style="margin-top:16px;text-align:center">
+      <h3 style="margin:0 0 6px">Talk to us</h3>
+      <p style="color:var(--mut);margin:0 0 12px">Independent evaluation, testbed access, or a mission-specific study.</p>
+      <a class="btn p" href="mailto:REPLACE_WITH_YOUR_CONTACT_EMAIL?subject=Latent%20Comms%20—%20evaluation%20enquiry">Contact the researcher</a>
+      <p style="color:var(--mut);font-size:12px;margin-top:12px">Set your contact address in <span class="mono">index.html</span> before sharing.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="disc">
+      <b>Disclaimer.</b> Latent Comms is an <b>independent research effort</b>. All performance figures are from
+      software simulation and are reproducible from the open-source code. This work is <b>not affiliated with,
+      sponsored by, or endorsed by</b> NASA, ESA, any defense agency, or any government or commercial organization.
+      Nothing here is a product offering, a performance guarantee, or ITAR/EAR-controlled technical data.
+    </div>
+    Latent Comms — learned communication for contested &amp; deep-space channels.
+    Research &amp; code: <a href="https://github.com/suncal/latent-comms">github.com/suncal/latent-comms</a> ·
+    Live demo: <a href="https://suncal.github.io/latent-radio/">Latent Radio</a>
+  </div>
+</footer>
+
+</body>
+</html>
